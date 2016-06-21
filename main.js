@@ -17,31 +17,31 @@ var client = new Client();
 
 var args = {
   data: credential,
-  headers: { "Content-Type": "application/json" }
+  headers: {"Content-Type": "application/json"}
 };
 
 var host = "https://stage2.cocobabys.com";
 var loginUrl = host + "/employee_login.do";
 var allSchools = host + "/kindergarten";
 
-var schoolUrl = function(id) {
+var schoolUrl = function (id) {
   return host + "/kindergarten/" + id;
 };
 
 client.post(loginUrl, args, function (data, response) {
-  // parsed response body as js object
-  console.log(data);
-  // raw response
-  console.log(response);
-  writeToFile('school', data);
-  client.get(allSchools, {}, function (data) {
-    _.each(data, function (s) {
-      console.log(s.schoolId);
-      writeToFile(s.schoolId, s);
+
+  client.get(allSchools, transferCookie(response), function (data2, response) {
+    console.log(data2);
+    _.each(data2, function (s) {
+      console.log(s.school_id);
+      writeToFile(s.school_id, s);
     })
   })
 });
 
+function transferCookie(res) {
+  return {headers: {cookie: res.headers['set-cookie'], "Content-Type": "application/json"}}
+}
 
 function writeToFile(filename, obj) {
   var file = './out/' + filename + '.json';
