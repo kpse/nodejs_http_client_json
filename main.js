@@ -133,14 +133,14 @@ function outputSchool(school, cookie) {
     // console.log(ePass);
 
     var relationshipsWithPassword = _.map(relationships, function (r) {
-      console.log(pPass[r.parent.phone]);
+      // console.log(pPass[r.parent.phone]);
       r.password = pPass[r.parent.phone] || '';
       return r;
     });
     var employeesWithPassword = _.map(employees, function (e) {
       var guard = ePass[e.phone] || {subordinate: '', login_password: ''};
-      console.log(guard);
-      console.log(guard.subordinate);
+      // console.log(guard);
+      // console.log(guard.subordinate);
       e.password = guard.login_password;
       e.subordinate = guard.subordinate || '';
       return e;
@@ -159,13 +159,43 @@ function outputSchool(school, cookie) {
 }
 
 function provinceOf(address) {
-  return address;
+  var m;
+  if (address == null) {
+    return '';
+  }
+  m = address.match(/^([^市省县区]+?省)/);
+  if (m == null) {
+    m = address.match(/^([^市省县自治区]+?自治区)/);
+  }
+  if (m == null) {
+    m = address.match(/^([^市省县自治特别行政区]+?特别行政区)/);
+  }
+  return (m && m[0]) || '';
 }
 function cityOf(address) {
-  return address;
+  var m;
+  if (address == null) {
+    return '';
+  }
+  m = address.match(/[^市省县区]+?[省|区]([^市省县区]+?自治州)/);
+  if (m == null) {
+    m = address.match(/[^市省县区]+?[省|区]([^市省县区]+?市)/);
+  }
+  if (m == null) {
+    m = address.match(/^([^市省县区]+?市)/);
+  }
+  return (m && m[1]) || '';
 }
 function areaOf(address) {
-  return address;
+  var m;
+  if (address == null) {
+    return '';
+  }
+  m = address.match(/自治州(.+?(县|区|市))/);
+  if (m == null) {
+    m = address.match(/市(.+?(县|区|市))/);
+  }
+  return (m && m[1]) || '';
 }
 
 function transformClass(classes) {
