@@ -7,7 +7,8 @@ var fs = require('fs');
 
 console.log(process.env.username);
 console.log(process.env.password);
-
+var env = '';
+// var env = 'stage2.';
 
 var credential = {
   account_name: process.env.username,
@@ -23,7 +24,7 @@ var args = {
   headers: {"Content-Type": "application/json"}
 };
 
-var host = "https://stage2.cocobabys.com";
+var host = "https://" + env + "cocobabys.com";
 var loginUrl = host + "/employee_login.do";
 var allSchools = host + "/kindergarten";
 
@@ -44,7 +45,7 @@ client.post(loginUrl, args, function (data, response) {
   var cookies = transferCookie(response);
   client.get(allSchools, cookies, function (all) {
     var schools = all;
-    _.each([schools[2]], function (s) {
+    _.each([schools[20]], function (s) {
       console.log('s.school_id =', s.school_id);
       outputSchool(s, cookies)
     })
@@ -99,11 +100,11 @@ function outputSchool(school, cookie) {
 
   var pPassDefer = Q.defer();
   var pPassDic = {};
-  fs.createReadStream('ref/p_pass_s.csv')
+  fs.createReadStream('ref/p_pass.' + env + 'csv')
     .pipe(csv())
     .on('data', function (data) {
       // console.log(data);
-      pPassDic[data['﻿phone']] = data["password"]
+      pPassDic[data['phone']] = data["password"]
     }).on('end', function () {
     pPassDefer.resolve(pPassDic);
   });
@@ -111,11 +112,11 @@ function outputSchool(school, cookie) {
 
   var ePassDefer = Q.defer();
   var ePassDic = {};
-  fs.createReadStream('ref/e_pass_s.csv')
+  fs.createReadStream('ref/e_pass.' + env + 'csv')
     .pipe(csv())
     .on('data', function (data) {
       // console.log(data);
-      ePassDic[data['﻿phone']] = data;
+      ePassDic[data['phone']] = data;
     }).on('end', function () {
     ePassDefer.resolve(ePassDic);
   });
@@ -133,7 +134,7 @@ function outputSchool(school, cookie) {
     // console.log(ePass);
 
     var relationshipsWithPassword = _.map(relationships, function (r) {
-      // console.log(pPass[r.parent.phone]);
+      // console.log(r.parent.phone, pPass[r.parent.phone]);
       r.password = pPass[r.parent.phone] || '';
       return r;
     });
