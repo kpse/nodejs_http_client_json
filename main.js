@@ -1,6 +1,8 @@
 var jsonfile = require('jsonfile');
 var _ = require('lodash');
 var Q = require('q');
+var csv = require('csv-parser');
+var fs = require('fs');
 
 
 console.log(process.env.username);
@@ -94,16 +96,60 @@ function outputSchool(school, cookie) {
   });
   var promiseOfClasses = classDefer.promise;
 
-  Q.all([promiseOfEmployees, promiseOfRelationships, promiseOfClasses]).then(function (arr) {
+
+  var pPassDefer = Q.defer();
+  var pPassDic = {};
+  fs.createReadStream('ref/p_pass.csv')
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      pPassDic[data['﻿phone']] = data["password"]
+    }).on('end', function () {
+    pPassDefer.resolve(pPassDic);
+  });
+  var promiseOfParentPass = pPassDefer.promise;
+
+  var ePassDefer = Q.defer();
+  var ePassDic = {};
+  fs.createReadStream('ref/e_pass.csv')
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      ePassDic[data['﻿phone']] = data;
+    }).on('end', function () {
+    ePassDefer.resolve(ePassDic);
+  });
+  var promiseOfEmployeePass = ePassDefer.promise;
+
+
+  Q.all([promiseOfEmployees, promiseOfRelationships,
+    promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass]).then(function (arr) {
     var employees = arr[0];
     var relationships = arr[1];
     var classes = arr[2];
+    var pPass = arr[3];
+    var ePass = arr[4];
+    // console.log(pPass);
+    // console.log(ePass);
 
-    content['master_info'] = pickUpPrincipal(employees);
-    content['teacher_list'] = transformEmployees(employees);
+    var relationshipsWithPassword = _.map(relationships, function (r) {
+      // console.log(pPass[r.parent.phone]);
+      r.password = pPass[r.parent.phone].password || '';
+      return r;
+    });
+    var employeesWithPassword = _.map(employees, function (e) {
+      // console.log(ePass[e.phone]);
+      // console.log(ePass[e.phone].subordinate);
+      e.password = ePass[e.phone].login_password;
+      e.subordinate = ePass[e.phone].subordinate || '';
+      return e;
+    });
+
+    content['master_info'] = pickUpPrincipal(employeesWithPassword);
+    content['teacher_list'] = transformEmployees(employeesWithPassword);
     content['class_list'] = transformClass(classes);
-    content['parent_list'] = transformParents(relationships);
-    content['child_list'] = transformChildren(relationships);
+    content['parent_list'] = transformParents(relationshipsWithPassword);
+    content['child_list'] = transformChildren(relationshipsWithPassword);
     // console.log('content', content);
 
     writeToFile(school.full_name, content);
@@ -138,9 +184,9 @@ function transformParents(relationships) {
       "source_parent_id": r.parent.parent_id,
       "mobile": r.parent.phone,
       "name": r.parent.name,
-      "password": pickUpParentPassword(r.parent.phone),
+      "password": r.password,
       "source_child_id": r.child.child_id,
-      "relation_type": ""//与孩子的关系，4-爸爸,5-妈妈,6-爷爷,7-姥姥,8-亲属,10-姥爷,11-奶奶
+      "relation_type": relationshipTranslate(r.relationship)
     };
   })
 }
@@ -166,10 +212,10 @@ function transformEmployees(employees) {
       "source_teacher_id": e.id,
       "mobile": e.phone,
       "name": e.name,
-      "password": pickUpEmployeePassword(e.phone),
+      "password": e.password,
       "birthday": e.birthday + " 00:00:00",
       "sex": genderDisplay(e.gender), //0-未知，1-男，2-女
-      "source_class_id": "??"
+      "source_class_id": e.subordinate
     };
   });
 }
@@ -183,7 +229,7 @@ function pickUpPrincipal(employees) {
     "source_master_id": principal.id,
     "mobile": principal.phone,
     "name": principal.name,
-    "password": pickUpEmployeePassword(principal.phone),
+    "password": principal.password,
     "introduction": ""
   };
 }
@@ -192,10 +238,19 @@ function genderDisplay(gender) {
   return gender == 0 ? '1' : '2';
 }
 
-function pickUpParentPassword(phone) {
-  return phone;
-}
-
-function pickUpEmployeePassword(phone) {
-  return phone;
+function relationshipTranslate(relationshipName) {
+  //与孩子的关系，4-爸爸,5-妈妈,6-爷爷,7-姥姥,8-亲属,10-姥爷,11-奶奶
+  if (relationshipName == '爸爸') {
+    return '4';
+  } else if (relationshipName == '妈妈') {
+    return '5';
+  } else if (relationshipName == '爷爷') {
+    return '6';
+  } else if (relationshipName == '姥姥') {
+    return '7';
+  } else if (relationshipName == '姥爷') {
+    return '10';
+  } else if (relationshipName == '奶奶') {
+    return '11';
+  } else return '8';
 }
