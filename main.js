@@ -44,7 +44,7 @@ client.post(loginUrl, args, function (data, response) {
   var cookies = transferCookie(response);
   client.get(allSchools, cookies, function (all) {
     var schools = all;
-    _.each([schools[1]], function (s) {
+    _.each([schools[2]], function (s) {
       console.log('s.school_id =', s.school_id);
       outputSchool(s, cookies)
     })
@@ -99,7 +99,7 @@ function outputSchool(school, cookie) {
 
   var pPassDefer = Q.defer();
   var pPassDic = {};
-  fs.createReadStream('ref/p_pass.csv')
+  fs.createReadStream('ref/p_pass_s.csv')
     .pipe(csv())
     .on('data', function (data) {
       // console.log(data);
@@ -111,7 +111,7 @@ function outputSchool(school, cookie) {
 
   var ePassDefer = Q.defer();
   var ePassDic = {};
-  fs.createReadStream('ref/e_pass.csv')
+  fs.createReadStream('ref/e_pass_s.csv')
     .pipe(csv())
     .on('data', function (data) {
       // console.log(data);
@@ -133,15 +133,16 @@ function outputSchool(school, cookie) {
     // console.log(ePass);
 
     var relationshipsWithPassword = _.map(relationships, function (r) {
-      // console.log(pPass[r.parent.phone]);
-      r.password = pPass[r.parent.phone].password || '';
+      console.log(pPass[r.parent.phone]);
+      r.password = pPass[r.parent.phone] || '';
       return r;
     });
     var employeesWithPassword = _.map(employees, function (e) {
-      // console.log(ePass[e.phone]);
-      // console.log(ePass[e.phone].subordinate);
-      e.password = ePass[e.phone].login_password;
-      e.subordinate = ePass[e.phone].subordinate || '';
+      var guard = ePass[e.phone] || {subordinate: '', login_password: ''};
+      console.log(guard);
+      console.log(guard.subordinate);
+      e.password = guard.login_password;
+      e.subordinate = guard.subordinate || '';
       return e;
     });
 
