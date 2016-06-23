@@ -147,11 +147,11 @@ function outputSchool(school, cookie) {
       return e;
     });
 
-    content['master_info'] = pickUpPrincipal(employeesWithPassword);
-    content['teacher_list'] = transformEmployees(employeesWithPassword);
-    content['class_list'] = transformClass(classes);
-    content['parent_list'] = transformParents(relationshipsWithPassword);
-    content['child_list'] = transformChildren(relationshipsWithPassword);
+    content['school_info']['master_info'] = pickUpPrincipal(employeesWithPassword);
+    content['school_info']['teacher_list'] = transformEmployees(employeesWithPassword);
+    content['school_info']['class_list'] = transformClass(classes);
+    content['school_info']['parent_list'] = transformParents(relationshipsWithPassword);
+    content['school_info']['child_list'] = transformChildren(relationshipsWithPassword);
     // console.log('content', content);
 
     writeToFile(school.full_name, content);
