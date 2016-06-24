@@ -39,6 +39,8 @@ client.post(loginUrl, args, function (data, response) {
   })
 });
 
+//core functions
+
 function iterateSchools(piece, schools, cookies) {
   if (schools.length == 0) {
     return console.log('all done');
@@ -47,15 +49,29 @@ function iterateSchools(piece, schools, cookies) {
     console.log('s.school_id =', s.school_id);
     return outputSchool(s, cookies);
   });
+
   Q.allSettled(tasks).then(function (results) {
-    console.log('next to ', schools[0].full_name, schools[0].school_id);
-    iterateSchools(piece, _.drop(schools, piece), cookies);
+    var next = _.drop(schools, piece);
+    var one = _.first(next) || {};
+    console.log('next to ', one.full_name, one.school_id);
+    iterateSchools(piece, next, cookies);
+  }, function (err) {
+    console.log('iterate err', err);
+  }).done(function (err) {
+    console.log('finished one iteration..');
   });
 }
 
 
 function outputSchool(school, cookie) {
   var writeTask = Q.defer();
+
+  if (isFileExisting(school.full_name)) {
+    console.log('skipping, school is existing: ' + school.school_id);
+    writeTask.resolve();
+    return writeTask.promise;
+  }
+
   console.log('school starting: ' + school.school_id);
   var s = school;
   var content = {
@@ -115,7 +131,7 @@ function outputSchool(school, cookie) {
   var promiseOfEmployeePass = ePassDefer.promise;
 
 
-  Q.allSettled([promiseOfEmployees, promiseOfRelationships,
+  Q.all([promiseOfEmployees, promiseOfRelationships,
     promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass]).then(function (arr) {
     var employees = arr[0];
     var relationships = arr[1];
@@ -149,11 +165,21 @@ function outputSchool(school, cookie) {
     writeToFile(school.full_name, content);
     console.log('school done: ' + school.school_id);
     writeTask.resolve();
+  }, function (err) {
+    console.log('school retrieve err', err);
   });
   return writeTask.promise;
 }
 
 //private
+
+var isFileExisting = function(name) {
+  try {
+    fs.accessSync('./out/' + name + '.json', fs.F_OK);
+    return true;
+  } catch (e) {}
+  return false;
+};
 
 var classUrl = function (school) {
   return host + "/kindergarten/" + school.school_id + '/class';
