@@ -28,42 +28,34 @@ var host = "https://" + env + "cocobabys.com";
 var loginUrl = host + "/employee_login.do";
 var allSchools = host + "/kindergarten";
 
-var classUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/class';
-};
-
-var employeeUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/employee?most=5000';
-};
-
-var relationshipUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/relationship';
-};
 
 client.post(loginUrl, args, function (data, response) {
 
   var cookies = transferCookie(response);
   client.get(allSchools, cookies, function (all) {
     var schools = all;
-    _.each([schools[20]], function (s) {
-      console.log('s.school_id =', s.school_id);
-      outputSchool(s, cookies)
-    })
+    console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
+    iterateSchools(5, schools, cookies);
   })
 });
 
-function transferCookie(res) {
-  return {headers: {cookie: res.headers['set-cookie'], "Content-Type": "application/json"}}
-}
-
-function writeToFile(filename, obj) {
-  var file = './out/' + filename + '.json';
-  jsonfile.writeFile(file, obj, function (err) {
-    if (err) console.error('err', err);
+function iterateSchools(piece, schools, cookies) {
+  if (schools.length == 0) {
+    return console.log('all done');
+  }
+  var tasks = _.map(_.take(schools, piece), function (s) {
+    console.log('s.school_id =', s.school_id);
+    return outputSchool(s, cookies);
+  });
+  Q.allSettled(tasks).then(function (results) {
+    console.log('next to ', schools[0].full_name, schools[0].school_id);
+    iterateSchools(piece, _.drop(schools, piece), cookies);
   });
 }
 
+
 function outputSchool(school, cookie) {
+  var writeTask = Q.defer();
   console.log('school starting: ' + school.school_id);
   var s = school;
   var content = {
@@ -123,7 +115,7 @@ function outputSchool(school, cookie) {
   var promiseOfEmployeePass = ePassDefer.promise;
 
 
-  Q.all([promiseOfEmployees, promiseOfRelationships,
+  Q.allSettled([promiseOfEmployees, promiseOfRelationships,
     promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass]).then(function (arr) {
     var employees = arr[0];
     var relationships = arr[1];
@@ -156,6 +148,34 @@ function outputSchool(school, cookie) {
 
     writeToFile(school.full_name, content);
     console.log('school done: ' + school.school_id);
+    writeTask.resolve();
+  });
+  return writeTask.promise;
+}
+
+//private
+
+var classUrl = function (school) {
+  return host + "/kindergarten/" + school.school_id + '/class';
+};
+
+var employeeUrl = function (school) {
+  return host + "/kindergarten/" + school.school_id + '/employee?most=5000';
+};
+
+var relationshipUrl = function (school) {
+  return host + "/kindergarten/" + school.school_id + '/relationship';
+};
+
+
+function transferCookie(res) {
+  return {headers: {cookie: res.headers['set-cookie'], "Content-Type": "application/json"}}
+}
+
+function writeToFile(filename, obj) {
+  var file = './out/' + filename + '.json';
+  jsonfile.writeFile(file, obj, function (err) {
+    if (err) console.error('err', err);
   });
 }
 
