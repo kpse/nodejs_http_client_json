@@ -69,7 +69,7 @@ function outputSchool(school, cookie) {
   var content = {
     "school_info": {
       "source_id": s.school_id.toString(),
-      "school_name": s.fullname,
+      "school_name": s.full_name,
       "school_description": s.desc,
       "province": provinceOf(s.address),
       "city": cityOf(s.address),
