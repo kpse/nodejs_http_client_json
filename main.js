@@ -7,12 +7,12 @@ var fs = require('fs');
 
 console.log(process.env.username);
 console.log(process.env.password);
-var env = '';
-// var env = 'stage2.';
+// var env = '';
+var env = 'stage2.';
 
 var credential = {
-  account_name: process.env.username,
-  password: process.env.password
+  account_name: process.env.username || 'username',
+  password: process.env.password || 'password'
 };
 
 var Client = require('node-rest-client').Client;
