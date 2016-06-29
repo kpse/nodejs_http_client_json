@@ -7,8 +7,8 @@ var fs = require('fs');
 
 console.log(process.env.username);
 console.log(process.env.password);
-// var env = '';
-var env = 'stage2.';
+var env = '';
+// var env = 'stage2.';
 
 var credential = {
   account_name: process.env.username || 'username',
@@ -173,11 +173,12 @@ function outputSchool(school, cookie) {
 
 //private
 
-var isFileExisting = function(name) {
+var isFileExisting = function (name) {
   try {
     fs.accessSync('./out/' + name + '.json', fs.F_OK);
     return true;
-  } catch (e) {}
+  } catch (e) {
+  }
   return false;
 };
 
@@ -257,7 +258,7 @@ function transformClass(classes) {
 
 function transformParents(relationships) {
   // console.log('transformParents', relationships);
-  return _.map(relationships, function (r) {
+  return _(relationships).map(function (r) {
     return {
       "source_parent_id": r.parent.parent_id,
       "mobile": r.parent.phone,
@@ -266,7 +267,25 @@ function transformParents(relationships) {
       "source_child_id": r.child.child_id,
       "relation_type": relationshipTranslate(r.relationship)
     };
-  })
+  }).groupBy('source_parent_id').map(function (family) {
+    var parent = family[0];
+    if (family.length > 1) {
+      var children = _.map(family, function (p) {
+        return p["source_child_id"];
+      });
+      var relationships = _.map(family, function (p) {
+        return p["relation_type"];
+      });
+      parent["source_child_id"] = children;
+      parent["relation_type"] = relationships;
+      console.log('multiple children parent: ', parent);
+      return parent;
+    }
+    parent["source_child_id"] = [parent["source_child_id"]];
+    parent["relation_type"] = [parent["relation_type"]];
+    return parent;
+  }).values();
+
 }
 function transformChildren(relationships) {
   // console.log('transformChildren');
