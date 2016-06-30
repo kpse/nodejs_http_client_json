@@ -35,26 +35,27 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    iterateSchools(5, schools, cookies);
+    // iterateSchools(5, schools, cookies, outputSchool);
+    iterateSchools(5, schools, cookies, outputHistory);
   })
 });
 
 //core functions
 
-function iterateSchools(piece, schools, cookies) {
+function iterateSchools(piece, schools, cookies, processFn) {
   if (schools.length == 0) {
     return console.log('all done');
   }
   var tasks = _.map(_.take(schools, piece), function (s) {
     console.log('s.school_id =', s.school_id);
-    return outputSchool(s, cookies);
+    return processFn(s, cookies);
   });
 
   Q.allSettled(tasks).then(function (results) {
     var next = _.drop(schools, piece);
     var one = _.first(next) || {};
     console.log('next to ', one.full_name, one.school_id);
-    iterateSchools(piece, next, cookies);
+    iterateSchools(piece, next, cookies, processFn);
   }, function (err) {
     console.log('iterate err', err);
   }).done(function (err) {
@@ -63,7 +64,7 @@ function iterateSchools(piece, schools, cookies) {
 }
 
 
-function outputSchool(school, cookie) {
+var outputSchool = function (school, cookie) {
   var writeTask = Q.defer();
 
   if (isFileExisting(school.full_name)) {
@@ -169,9 +170,117 @@ function outputSchool(school, cookie) {
     console.log('school retrieve err', err);
   });
   return writeTask.promise;
-}
+};
+
+var outputHistory = function (school, cookie) {
+  var writeTask = Q.defer();
+
+  if (isFileExisting(school.full_name)) {
+    console.log('skipping, school is existing: ' + school.school_id);
+    writeTask.resolve();
+    return writeTask.promise;
+  }
+
+  console.log('school starting: ' + school.school_id);
+  var s = school;
+  var content = {
+    "school_info": {
+      "source_id": s.school_id.toString(),
+      "school_name": s.full_name,
+      "dynamic_list_teacher": [],
+      "dynamic_list_parent": []
+    }
+  };
+
+
+  var pSessionDefer = Q.defer();
+  var pDic = {};
+  fs.createReadStream('ref/p_session.' + env + 'csv')
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      pDic[data['sender']] = data
+    }).on('end', function () {
+    pSessionDefer.resolve(pDic);
+  });
+  var promiseOfParentSession = pSessionDefer.promise;
+
+  var eSessionDefer = Q.defer();
+  var eDic = {};
+  fs.createReadStream('ref/e_session.' + env + 'csv')
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      eDic[data['sender']] = data
+    }).on('end', function () {
+    eSessionDefer.resolve(eDic);
+  });
+  var promiseOfEmployeeSession = eSessionDefer.promise;
+
+
+  Q.all([promiseOfParentSession, promiseOfEmployeeSession]).then(function (arr) {
+    var employees = arr[0];
+    var parents = arr[1];
+    // console.log(employees);
+    // console.log(parents);
+
+
+    content['school_info']['dynamic_list_teacher'] = mappingTeacherSessions(employees);
+    content['school_info']['dynamic_list_parent'] = mappingParentSessions(parents);
+
+
+    dynamicInfoOutput(school.full_name, content);
+    console.log('school dynamic done: ' + school.school_id);
+    writeTask.resolve();
+  }, function (err) {
+    console.log('school dynamic retrieve err', err);
+  });
+
+  return writeTask.promise;
+};
 
 //private
+
+var mappingTeacherSessions = function (sessions) {
+  return _.map(sessions, function (s) {
+    var item = {
+      "source_teacher_id": s.sender,
+      "content": s.content,
+      "img_path": [],
+      "video_path": "",
+      "is_public": "0",
+      "create_time": timeDisplay(s.update_at)
+    };
+    if (s.media_type == 'video') {
+      item["video_path"] = s.media_url;
+    } else {
+      item["img_path"] = s.media_url.split('  ');
+    }
+
+    return item;
+  });
+}
+
+var mappingParentSessions = function (sessions) {
+  return _.map(sessions, function (s) {
+    var item = {
+      "source_parent_id": s.sender,
+      "source_child_id": retrieveChildId(s.session_id),
+      "content": s.content,
+      "img_path": [],
+      "video_path": "",
+      "is_public": "0",
+      "create_time": timeDisplay(s.update_at)
+    };
+    if (s.media_type == 'video') {
+      item["video_path"] = s.media_url;
+    } else {
+      item["img_path"] = s.media_url.split('  ');
+    }
+
+    return item;
+  });
+}
 
 var isFileExisting = function (name) {
   try {
@@ -199,8 +308,16 @@ function transferCookie(res) {
   return {headers: {cookie: res.headers['set-cookie'], "Content-Type": "application/json"}}
 }
 
+// output
 function writeToFile(filename, obj) {
   var file = './out/' + filename + '.json';
+  jsonfile.writeFile(file, obj, function (err) {
+    if (err) console.error('err', err);
+  });
+}
+
+function dynamicInfoOutput(filename, obj) {
+  var file = './out-dynamic/dynamic-' + filename + '.json';
   jsonfile.writeFile(file, obj, function (err) {
     if (err) console.error('err', err);
   });
@@ -350,4 +467,12 @@ function relationshipTranslate(relationshipName) {
   } else if (relationshipName == '奶奶') {
     return '11';
   } else return '8';
+}
+
+function timeDisplay(timestamp) {
+  return new Date(timestamp).toISOString().slice(0, 19).replace(/T/g," ");
+}
+
+function retrieveChildId(sessionId) {
+  return sessionId.substring(2);
 }
