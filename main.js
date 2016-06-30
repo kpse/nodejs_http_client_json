@@ -36,7 +36,7 @@ client.post(loginUrl, args, function (data, response) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
     // iterateSchools(5, schools, cookies, outputSchool);
-    iterateSchools(5, schools, cookies, outputHistory);
+    iterateSchools2(schools);
   })
 });
 
@@ -61,6 +61,49 @@ function iterateSchools(piece, schools, cookies, processFn) {
   }).done(function (err) {
     console.log('finished one iteration..');
   });
+}
+
+function iterateSchools2(schools) {
+
+  var pSessionDefer = Q.defer();
+  var pDic = {};
+  fs.createReadStream('ref/p_session.' + env + 'csv')
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      pDic[data['sender']] = data
+    }).on('end', function () {
+    pSessionDefer.resolve(pDic);
+  });
+  var promiseOfParentSession = pSessionDefer.promise;
+
+  var eSessionDefer = Q.defer();
+  var eDic = {};
+  fs.createReadStream('ref/e_session.' + env + 'csv')
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      eDic[data['sender']] = data
+    }).on('end', function () {
+    eSessionDefer.resolve(eDic);
+  });
+  var promiseOfEmployeeSession = eSessionDefer.promise;
+
+  Q.all([promiseOfParentSession, promiseOfEmployeeSession]).then(function (arr) {
+    var parents = arr[0];
+    var employees = arr[1];
+    // console.log(employees);
+    // console.log(parents);
+
+
+    _.each(schools, function (school) {
+      outputHistory(school, employees, parents);
+    });
+
+  }, function (err) {
+    console.log('school dynamic retrieve err', err);
+  });
+
 }
 
 
@@ -172,16 +215,13 @@ var outputSchool = function (school, cookie) {
   return writeTask.promise;
 };
 
-var outputHistory = function (school, cookie) {
-  var writeTask = Q.defer();
+var outputHistory = function (school, employeesDic, parentsDic) {
 
   if (isFileExisting(school.full_name)) {
     console.log('skipping, school is existing: ' + school.school_id);
-    writeTask.resolve();
-    return writeTask.promise;
   }
 
-  console.log('school starting: ' + school.school_id);
+  console.log('school starting history: ' + school.school_id);
   var s = school;
   var content = {
     "school_info": {
@@ -192,51 +232,12 @@ var outputHistory = function (school, cookie) {
     }
   };
 
-
-  var pSessionDefer = Q.defer();
-  var pDic = {};
-  fs.createReadStream('ref/p_session.' + env + 'csv')
-    .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      pDic[data['sender']] = data
-    }).on('end', function () {
-    pSessionDefer.resolve(pDic);
-  });
-  var promiseOfParentSession = pSessionDefer.promise;
-
-  var eSessionDefer = Q.defer();
-  var eDic = {};
-  fs.createReadStream('ref/e_session.' + env + 'csv')
-    .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      eDic[data['sender']] = data
-    }).on('end', function () {
-    eSessionDefer.resolve(eDic);
-  });
-  var promiseOfEmployeeSession = eSessionDefer.promise;
+  content['school_info']['dynamic_list_teacher'] = mappingTeacherSessions(employeesDic);
+  content['school_info']['dynamic_list_parent'] = mappingParentSessions(parentsDic);
 
 
-  Q.all([promiseOfParentSession, promiseOfEmployeeSession]).then(function (arr) {
-    var employees = arr[0];
-    var parents = arr[1];
-    // console.log(employees);
-    // console.log(parents);
-
-
-    content['school_info']['dynamic_list_teacher'] = mappingTeacherSessions(employees);
-    content['school_info']['dynamic_list_parent'] = mappingParentSessions(parents);
-
-
-    dynamicInfoOutput(school.full_name, content);
-    console.log('school dynamic done: ' + school.school_id);
-    writeTask.resolve();
-  }, function (err) {
-    console.log('school dynamic retrieve err', err);
-  });
-
-  return writeTask.promise;
+  dynamicInfoOutput(school.full_name, content);
+  console.log('school dynamic done: ' + school.school_id);
 };
 
 //private
@@ -470,7 +471,7 @@ function relationshipTranslate(relationshipName) {
 }
 
 function timeDisplay(timestamp) {
-  return new Date(timestamp).toISOString().slice(0, 19).replace(/T/g," ");
+  return new Date(Number(timestamp)).toISOString().slice(0, 19).replace(/T/g, " ");
 }
 
 function retrieveChildId(sessionId) {
