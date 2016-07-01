@@ -7,8 +7,8 @@ var fs = require('fs');
 
 console.log(process.env.username);
 console.log(process.env.password);
-var env = '';
-// var env = 'stage2.';
+// var env = '';
+var env = 'stage2.';
 
 var credential = {
   account_name: process.env.username || 'username',
@@ -95,9 +95,15 @@ function iterateSchools2(schools) {
     // console.log(employees);
     // console.log(parents);
 
+    var employeesDic = _.groupBy(employees, 'school_id');
+    var parentsDic = _.groupBy(employees, 'school_id');
+
+    console.log(employeesDic);
+    console.log(parentsDic);
 
     _.each(schools, function (school) {
-      outputHistory(school, employees, parents);
+      outputHistory(school, employeesDic[school.school_id.toString()] || [],
+        parentsDic[school.school_id.toString()] || []);
     });
 
   }, function (err) {
