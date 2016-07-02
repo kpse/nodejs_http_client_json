@@ -65,29 +65,9 @@ function iterateSchools(piece, schools, cookies, processFn) {
 
 function iterateSchools2(schools) {
 
-  var pSessionDefer = Q.defer();
-  var pDic = {};
-  fs.createReadStream('ref/p_session.' + env + 'csv')
-    .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      pDic[data['sender']] = data
-    }).on('end', function () {
-    pSessionDefer.resolve(pDic);
-  });
-  var promiseOfParentSession = pSessionDefer.promise;
+  var promiseOfParentSession = parseCSV('ref/p_session.' + env + 'csv', 'sender');
 
-  var eSessionDefer = Q.defer();
-  var eDic = {};
-  fs.createReadStream('ref/e_session.' + env + 'csv')
-    .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      eDic[data['sender']] = data
-    }).on('end', function () {
-    eSessionDefer.resolve(eDic);
-  });
-  var promiseOfEmployeeSession = eSessionDefer.promise;
+  var promiseOfEmployeeSession = parseCSV('ref/e_session.' + env + 'csv', 'sender');
 
   Q.all([promiseOfParentSession, promiseOfEmployeeSession]).then(function (arr) {
     var parents = arr[0];
@@ -96,10 +76,10 @@ function iterateSchools2(schools) {
     // console.log(parents);
 
     var employeesDic = _.groupBy(employees, 'school_id');
-    var parentsDic = _.groupBy(employees, 'school_id');
+    var parentsDic = _.groupBy(parents, 'school_id');
 
-    console.log(employeesDic);
-    console.log(parentsDic);
+    // console.log(employeesDic);
+    // console.log(parentsDic);
 
     _.each(schools, function (school) {
       outputHistory(school, employeesDic[school.school_id.toString()] || [],
@@ -156,29 +136,9 @@ var outputSchool = function (school, cookie) {
   var promiseOfClasses = classDefer.promise;
 
 
-  var pPassDefer = Q.defer();
-  var pPassDic = {};
-  fs.createReadStream('ref/p_pass.' + env + 'csv')
-    .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      pPassDic[data['phone']] = data["password"]
-    }).on('end', function () {
-    pPassDefer.resolve(pPassDic);
-  });
-  var promiseOfParentPass = pPassDefer.promise;
+  var promiseOfParentPass = parseCSV('ref/p_pass.' + env + 'csv', 'phone');
 
-  var ePassDefer = Q.defer();
-  var ePassDic = {};
-  fs.createReadStream('ref/e_pass.' + env + 'csv')
-    .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      ePassDic[data['phone']] = data;
-    }).on('end', function () {
-    ePassDefer.resolve(ePassDic);
-  });
-  var promiseOfEmployeePass = ePassDefer.promise;
+  var promiseOfEmployeePass = parseCSV('ref/e_pass.' + env + 'csv', 'phone');
 
 
   Q.all([promiseOfEmployees, promiseOfRelationships,
@@ -247,6 +207,23 @@ var outputHistory = function (school, employeesDic, parentsDic) {
 };
 
 //private
+
+function parseCSV(fileName, fieldName) {
+  var fieldName = fieldName || 'sender';
+  var fileName = fileName;
+  var deferred = Q.defer();
+  var dic = {};
+  fs.createReadStream(fileName)
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      dic[data[fieldName]] = data
+    }).on('end', function () {
+    deferred.resolve(dic);
+  });
+  return deferred.promise;
+}
+
 
 var mappingTeacherSessions = function (sessions) {
   return _.map(sessions, function (s) {
