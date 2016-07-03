@@ -1,8 +1,9 @@
 var jsonfile = require('jsonfile');
 var _ = require('lodash');
 var Q = require('q');
-var csv = require('csv-parser');
 var fs = require('fs');
+var relationshipTranslate = require('./src/relationship');
+var parseCSV = require('./src/parseCSV');
 
 
 console.log(process.env.username);
@@ -208,21 +209,6 @@ var outputHistory = function (school, employeesDic, parentsDic) {
 
 //private
 
-function parseCSV(fileName, fieldName) {
-  var fieldName = fieldName || 'sender';
-  var fileName = fileName;
-  var deferred = Q.defer();
-  var dic = {};
-  fs.createReadStream(fileName)
-    .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      dic[data[fieldName]] = data
-    }).on('end', function () {
-    deferred.resolve(dic);
-  });
-  return deferred.promise;
-}
 
 
 var mappingTeacherSessions = function (sessions) {
@@ -434,23 +420,6 @@ function pickUpPrincipal(employees) {
 
 function genderDisplay(gender) {
   return gender == 0 ? '1' : '2';
-}
-
-function relationshipTranslate(relationshipName) {
-  //与孩子的关系，4-爸爸,5-妈妈,6-爷爷,7-姥姥,8-亲属,10-姥爷,11-奶奶
-  if (relationshipName == '爸爸') {
-    return '4';
-  } else if (relationshipName == '妈妈') {
-    return '5';
-  } else if (relationshipName == '爷爷') {
-    return '6';
-  } else if (relationshipName == '姥姥') {
-    return '7';
-  } else if (relationshipName == '姥爷') {
-    return '10';
-  } else if (relationshipName == '奶奶') {
-    return '11';
-  } else return '8';
 }
 
 function timeDisplay(timestamp) {
