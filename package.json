@@ -7,6 +7,7 @@
     "csv-parser": "^1.9.3",
     "fs": "0.0.2",
     "jsonfile": "^2.3.1",
+    "line-by-line": "^0.1.5",
     "lodash": "^4.13.1",
     "node-rest-client": "^1.8.0",
     "q": "^1.4.1"
