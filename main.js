@@ -5,6 +5,7 @@ var fs = require('fs');
 var relationshipTranslate = require('./src/relationship');
 var parseCSV = require('./src/parseCSV');
 var address = require('./src/address');
+var display = require('./src/display');
 
 
 console.log(process.env.username);
@@ -220,7 +221,7 @@ var mappingTeacherSessions = function (sessions) {
       "img_path": [],
       "video_path": "",
       "is_public": "0",
-      "create_time": timeDisplay(s.update_at)
+      "create_time": display.time(s.update_at)
     };
     if (s.media_type == 'video') {
       item["video_path"] = s.media_url;
@@ -241,7 +242,7 @@ var mappingParentSessions = function (sessions) {
       "img_path": [],
       "video_path": "",
       "is_public": "0",
-      "create_time": timeDisplay(s.update_at)
+      "create_time": display.time(s.update_at)
     };
     if (s.media_type == 'video') {
       item["video_path"] = s.media_url;
@@ -343,7 +344,7 @@ function transformChildren(relationships) {
       "name": r.child.name,
       "source_class_id": r.child.class_id.toString(),
       "birthday": r.child.birthday + " 00:00:00",
-      "sex": genderDisplay(r.child.gender), //0-未知，1-男，2-女
+      "sex": display.gender(r.child.gender), //0-未知，1-男，2-女
       "is_graduation": "0", //0-否，1-是
       "is_in_school": "1" //0-否，1-是
     };
@@ -359,7 +360,7 @@ function transformEmployees(employees) {
       "name": e.name,
       "password": e.password,
       "birthday": e.birthday + " 00:00:00",
-      "sex": genderDisplay(e.gender), //0-未知，1-男，2-女
+      "sex": display.gender(e.gender), //0-未知，1-男，2-女
       "source_class_id": e.subordinate
     };
   });
@@ -377,14 +378,6 @@ function pickUpPrincipal(employees) {
     "password": principal.password,
     "introduction": ""
   };
-}
-
-function genderDisplay(gender) {
-  return gender == 0 ? '1' : '2';
-}
-
-function timeDisplay(timestamp) {
-  return new Date(Number(timestamp)).toISOString().slice(0, 19).replace(/T/g, " ");
 }
 
 function retrieveChildId(sessionId) {
