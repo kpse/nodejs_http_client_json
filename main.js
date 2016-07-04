@@ -2,11 +2,10 @@ var jsonfile = require('jsonfile');
 var _ = require('lodash');
 var Q = require('q');
 var fs = require('fs');
-var relationshipTranslate = require('./src/relationship');
 var parseCSV = require('./src/parseCSV');
 var address = require('./src/address');
+var transform = require('./src/transform');
 var display = require('./src/display');
-
 
 console.log(process.env.username);
 console.log(process.env.password);
@@ -38,8 +37,8 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    // iterateSchools(5, schools, cookies, outputSchool);
-    iterateSchools2(schools);
+    iterateSchools(5, schools, cookies, outputSchool);
+    // iterateSchools2(schools);
   })
 });
 
@@ -169,10 +168,10 @@ var outputSchool = function (school, cookie) {
     });
 
     content['school_info']['master_info'] = pickUpPrincipal(employeesWithPassword);
-    content['school_info']['teacher_list'] = transformEmployees(employeesWithPassword);
-    content['school_info']['class_list'] = transformClass(classes);
-    content['school_info']['parent_list'] = transformParents(relationshipsWithPassword);
-    content['school_info']['child_list'] = transformChildren(relationshipsWithPassword);
+    content['school_info']['teacher_list'] = transform.employees(employeesWithPassword);
+    content['school_info']['class_list'] = transform.classes(classes);
+    content['school_info']['parent_list'] = transform.parents(relationshipsWithPassword);
+    content['school_info']['child_list'] = transform.children(relationshipsWithPassword);
     // console.log('content', content);
 
     writeToFile(school.full_name, content);
@@ -292,77 +291,6 @@ function dynamicInfoOutput(filename, obj) {
   var file = './out-dynamic/dynamic-' + filename + '.json';
   jsonfile.writeFile(file, obj, function (err) {
     if (err) console.error('err', err);
-  });
-}
-
-function transformClass(classes) {
-  return _.map(classes, function (c) {
-    return {
-      "source_class_id": c.class_id.toString(),
-      "class_name": c.name,
-      "is_graduation": "0"
-    };
-  });
-}
-
-function transformParents(relationships) {
-  // console.log('transformParents', relationships);
-  return _(relationships).map(function (r) {
-    return {
-      "source_parent_id": r.parent.parent_id,
-      "mobile": r.parent.phone,
-      "name": r.parent.name,
-      "password": r.password,
-      "source_child_id": r.child.child_id,
-      "relation_type": relationshipTranslate(r.relationship)
-    };
-  }).groupBy('source_parent_id').map(function (family) {
-    var parent = family[0];
-    if (family.length > 1) {
-      var children = _.map(family, function (p) {
-        return p["source_child_id"];
-      });
-      var relationships = _.map(family, function (p) {
-        return p["relation_type"];
-      });
-      parent["source_child_id"] = children;
-      parent["relation_type"] = relationships;
-      console.log('multiple children parent: ', parent);
-      return parent;
-    }
-    parent["source_child_id"] = [parent["source_child_id"]];
-    parent["relation_type"] = [parent["relation_type"]];
-    return parent;
-  }).values();
-
-}
-function transformChildren(relationships) {
-  // console.log('transformChildren');
-  return _.map(relationships, function (r) {
-    return {
-      "source_child_id": r.child.child_id,
-      "name": r.child.name,
-      "source_class_id": r.child.class_id.toString(),
-      "birthday": r.child.birthday + " 00:00:00",
-      "sex": display.gender(r.child.gender), //0-未知，1-男，2-女
-      "is_graduation": "0", //0-否，1-是
-      "is_in_school": "1" //0-否，1-是
-    };
-  })
-}
-
-function transformEmployees(employees) {
-  // console.log('transformEmployees', employees);
-  return _.map(employees, function (e) {
-    return {
-      "source_teacher_id": e.id,
-      "mobile": e.phone,
-      "name": e.name,
-      "password": e.password,
-      "birthday": e.birthday + " 00:00:00",
-      "sex": display.gender(e.gender), //0-未知，1-男，2-女
-      "source_class_id": e.subordinate
-    };
   });
 }
 
