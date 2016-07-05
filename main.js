@@ -1,11 +1,10 @@
-var jsonfile = require('jsonfile');
 var _ = require('lodash');
 var Q = require('q');
-var fs = require('fs');
 var parseCSV = require('./src/parseCSV');
 var address = require('./src/address');
 var transform = require('./src/transform');
 var display = require('./src/display');
+var file = require('./src/file');
 
 console.log(process.env.username);
 console.log(process.env.password);
@@ -38,7 +37,7 @@ client.post(loginUrl, args, function (data, response) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
     iterateSchools(5, schools, cookies, outputSchool);
-    // iterateSchools2(schools);
+    iterateSchools2(schools);
   })
 });
 
@@ -98,7 +97,7 @@ function iterateSchools2(schools) {
 var outputSchool = function (school, cookie) {
   var writeTask = Q.defer();
 
-  if (isFileExisting(school.full_name)) {
+  if (file.isExisting(school.full_name)) {
     console.log('skipping, school is existing: ' + school.school_id);
     writeTask.resolve();
     return writeTask.promise;
@@ -174,7 +173,7 @@ var outputSchool = function (school, cookie) {
     content['school_info']['child_list'] = transform.children(relationshipsWithPassword);
     // console.log('content', content);
 
-    writeToFile(school.full_name, content);
+    file.write(school.full_name, content);
     console.log('school done: ' + school.school_id);
     writeTask.resolve();
   }, function (err) {
@@ -185,7 +184,7 @@ var outputSchool = function (school, cookie) {
 
 var outputHistory = function (school, employeesDic, parentsDic) {
 
-  if (isFileExisting(school.full_name)) {
+  if (file.isExisting(school.full_name)) {
     console.log('skipping, school is existing: ' + school.school_id);
   }
 
@@ -204,7 +203,7 @@ var outputHistory = function (school, employeesDic, parentsDic) {
   content['school_info']['dynamic_list_parent'] = mappingParentSessions(parentsDic);
 
 
-  dynamicInfoOutput(school.full_name, content);
+  file.dynamicOutput(school.full_name, content);
   console.log('school dynamic done: ' + school.school_id);
 };
 
@@ -253,15 +252,6 @@ var mappingParentSessions = function (sessions) {
   });
 }
 
-var isFileExisting = function (name) {
-  try {
-    fs.accessSync('./out/' + name + '.json', fs.F_OK);
-    return true;
-  } catch (e) {
-  }
-  return false;
-};
-
 var classUrl = function (school) {
   return host + "/kindergarten/" + school.school_id + '/class';
 };
@@ -280,19 +270,7 @@ function transferCookie(res) {
 }
 
 // output
-function writeToFile(filename, obj) {
-  var file = './out/' + filename + '.json';
-  jsonfile.writeFile(file, obj, function (err) {
-    if (err) console.error('err', err);
-  });
-}
 
-function dynamicInfoOutput(filename, obj) {
-  var file = './out-dynamic/dynamic-' + filename + '.json';
-  jsonfile.writeFile(file, obj, function (err) {
-    if (err) console.error('err', err);
-  });
-}
 
 function pickUpPrincipal(employees) {
   // console.log('pickUpPrincipal', employees);
