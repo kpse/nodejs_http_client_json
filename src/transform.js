@@ -73,9 +73,53 @@ function transformClass(classes) {
   });
 }
 
+var mappingTeacherSessions = function (sessions) {
+  return _.map(sessions, function (s) {
+    var item = {
+      "source_teacher_id": s.sender,
+      "content": s.content,
+      "img_path": [],
+      "video_path": "",
+      "is_public": "0",
+      "create_time": display.time(s.update_at)
+    };
+    if (s.media_type == 'video') {
+      item["video_path"] = s.media_url;
+    } else {
+      item["img_path"] = s.media_url.split('  ');
+    }
+
+    return item;
+  });
+}
+
+var mappingParentSessions = function (sessions) {
+  return _.map(sessions, function (s) {
+    var item = {
+      "source_parent_id": s.sender,
+      "source_child_id": retrieveChildId(s.session_id),
+      "content": s.content,
+      "img_path": [],
+      "video_path": "",
+      "is_public": "0",
+      "create_time": display.time(s.update_at)
+    };
+    if (s.media_type == 'video') {
+      item["video_path"] = s.media_url;
+    } else {
+      item["img_path"] = s.media_url.split('  ');
+    }
+
+    return item;
+  });
+}
+
+
 module.exports = {
   parents: transformParents,
   children: transformChildren,
   employees: transformEmployees,
-  classes: transformClass
+  classes: transformClass,
+  mapToTeachers: mappingTeacherSessions,
+  mapToParents: mappingParentSessions
 };

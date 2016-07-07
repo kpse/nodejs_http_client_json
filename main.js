@@ -199,8 +199,8 @@ var outputHistory = function (school, employeesDic, parentsDic) {
     }
   };
 
-  content['school_info']['dynamic_list_teacher'] = mappingTeacherSessions(employeesDic);
-  content['school_info']['dynamic_list_parent'] = mappingParentSessions(parentsDic);
+  content['school_info']['dynamic_list_teacher'] = transform.mapToTeachers(employeesDic);
+  content['school_info']['dynamic_list_parent'] = transform.mapToParents(parentsDic);
 
 
   file.dynamicOutput(school.full_name, content);
@@ -208,49 +208,6 @@ var outputHistory = function (school, employeesDic, parentsDic) {
 };
 
 //private
-
-
-
-var mappingTeacherSessions = function (sessions) {
-  return _.map(sessions, function (s) {
-    var item = {
-      "source_teacher_id": s.sender,
-      "content": s.content,
-      "img_path": [],
-      "video_path": "",
-      "is_public": "0",
-      "create_time": display.time(s.update_at)
-    };
-    if (s.media_type == 'video') {
-      item["video_path"] = s.media_url;
-    } else {
-      item["img_path"] = s.media_url.split('  ');
-    }
-
-    return item;
-  });
-}
-
-var mappingParentSessions = function (sessions) {
-  return _.map(sessions, function (s) {
-    var item = {
-      "source_parent_id": s.sender,
-      "source_child_id": retrieveChildId(s.session_id),
-      "content": s.content,
-      "img_path": [],
-      "video_path": "",
-      "is_public": "0",
-      "create_time": display.time(s.update_at)
-    };
-    if (s.media_type == 'video') {
-      item["video_path"] = s.media_url;
-    } else {
-      item["img_path"] = s.media_url.split('  ');
-    }
-
-    return item;
-  });
-}
 
 var classUrl = function (school) {
   return host + "/kindergarten/" + school.school_id + '/class';
