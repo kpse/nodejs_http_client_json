@@ -13,5 +13,11 @@ describe('Address', function () {
         assert.equal('深圳市', address.cityOf('广东省深圳市'));
       });
     });
+    describe('areaOf()', function () {
+      it('should return area of given address string', function () {
+        assert.equal('', address.areaOf('四川省成都市'));
+        assert.equal('龙岗区', address.areaOf('广东省深圳市龙岗区'));
+      });
+    });
   });
 });
