@@ -2,7 +2,7 @@ var Q = require('q');
 var fs = require('fs');
 var csv = require('csv-parser');
 
-module.exports = function parseCSV(fileName, fieldName) {
+function parseCSV(fileName, fieldName) {
   var fieldName = fieldName || 'sender';
   var fileName = fileName;
   var deferred = Q.defer();
@@ -16,4 +16,23 @@ module.exports = function parseCSV(fileName, fieldName) {
     deferred.resolve(dic);
   });
   return deferred.promise;
+}
+
+function mapCSV(fileName) {
+  var deferred = Q.defer();
+  var result = [];
+  fs.createReadStream(fileName)
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      result.push(data);
+    }).on('end', function () {
+    deferred.resolve(result);
+  });
+  return deferred.promise;
+}
+
+module.exports = {
+  parseCSV: parseCSV,
+  mapCSV: mapCSV
 }

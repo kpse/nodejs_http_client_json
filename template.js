@@ -53,3 +53,25 @@ var template = {
     }]
   }
 };
+
+var cardinfo = {
+  "card_info": {
+    "school_id": "",
+    "school_name": "",
+    "card_list": [
+      {
+        "card_no": "",
+        "mac_id": "",
+        "status": "",
+        "type": "",
+        "persion_id": "",
+        "persion_name": "",
+        "class_id": "",
+        "class_name": "",
+        "create_time": "",
+        "origin": "youlebao"
+      },
+      {}
+    ]
+  }
+};

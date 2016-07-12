@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var Q = require('q');
-var parseCSV = require('./src/parseCSV');
+var parseCSV = require('./src/parseCSV').parseCSV;
 var address = require('./src/address');
 var transform = require('./src/transform');
 var display = require('./src/display');
