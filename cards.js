@@ -40,8 +40,8 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
   });
 
 
-  // file.write('空白卡', unusedTransform(unused));
-  // console.log('school done: ' + school.school_id);
+  file.write('空白卡', unusedTransform(unused));
+  console.log('school done: ' + school.school_id);
 
 });
 
