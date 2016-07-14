@@ -112,6 +112,10 @@ var mappingParentSessions = function (sessions) {
 
     return item;
   });
+};
+
+function retrieveChildId(sessionId) {
+  return sessionId.substring(2);
 }
 
 

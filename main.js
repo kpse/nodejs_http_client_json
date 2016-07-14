@@ -242,7 +242,3 @@ function pickUpPrincipal(employees) {
     "introduction": ""
   };
 }
-
-function retrieveChildId(sessionId) {
-  return sessionId.substring(2);
-}
