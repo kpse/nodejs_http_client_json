@@ -51,7 +51,7 @@ function unusedTransform(info) {
       "card_list": _.map(info, function (card) {
         return {
           "card_no": card[CARD_FIELD],
-          "mac_id": card.mac,
+          "mac_id": card[CARD_FIELD],
           "create_time": "2016-06-12 18:18:18",
           "origin": "youlebao"
         }
@@ -79,7 +79,7 @@ function employeeCards(employees) {
   return _.map(employees, function (e) {
     return {
       "card_no": e.card,
-      "mac_id": e.mac,
+      "mac_id": e.card,
       "status": "0",
       "type": "0",
       "person_id": e.employee_id,
@@ -94,7 +94,7 @@ function childrenCards(children) {
   return _.map(children, function (c) {
     return {
       "card_no": c.card,
-      "mac_id": c.mac,
+      "mac_id": c.card,
       "status": "0",
       "type": "1",
       "person_id": c.child_id,
