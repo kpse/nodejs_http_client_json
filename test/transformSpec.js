@@ -2,7 +2,7 @@ var transform = require('../src/transform');
 var assert = require('chai').assert;
 
 describe('Transform', function () {
-  describe('to parents', function () {
+  describe('to parent session', function () {
     it('should accept sessions', function () {
       var parents = transform.mapToParents([
         {
@@ -31,6 +31,27 @@ describe('Transform', function () {
       ]);
       assert.equal(1, parents.length);
       assert.equal('http://abc.com', parents[0].video_path);
+    });
+    describe('to parents', function () {
+      it('should convert from relationship', function () {
+        var parents = transform.parents([
+          {
+            parent: {
+              parent_id: 'parent_id',
+              phone: 'phone',
+              name: 'name',
+            },
+            child: {
+              name: 'child_name',
+              child_id: 'child_id'
+            },
+            relationship: '爸爸',
+            password: 'password',
+          }
+        ]);
+        assert.equal(1, parents.length);
+        assert.equal('phone', parents[0].mobile);
+      });
     });
 
   });

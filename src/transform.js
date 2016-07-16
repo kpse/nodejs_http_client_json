@@ -14,6 +14,7 @@ function transformParents(relationships) {
       "relation_type": relationshipTranslate(r.relationship)
     };
   }).groupBy('source_parent_id').map(function (family) {
+    // console.log('in group by', family);
     var parent = family[0];
     if (family.length > 1) {
       var children = _.map(family, function (p) {
@@ -27,11 +28,11 @@ function transformParents(relationships) {
       console.log('multiple children parent: ', parent);
       return parent;
     }
+    // console.log('single child parent: ', parent);
     parent["source_child_id"] = [parent["source_child_id"]];
     parent["relation_type"] = [parent["relation_type"]];
     return parent;
-  }).values();
-
+  }).value();
 }
 function transformChildren(relationships) {
   // console.log('transformChildren');
@@ -109,7 +110,6 @@ var mappingParentSessions = function (sessions) {
     } else {
       item["img_path"] = s.media_url.split('  ');
     }
-
     return item;
   });
 };
