@@ -52,6 +52,96 @@ describe('Transform', function () {
         assert.equal(1, parents.length);
         assert.equal('phone', parents[0].mobile);
       });
+      it('should remove duplicates', function () {
+        var parentInfo = {
+          parent: {
+            parent_id: 'parent_id',
+            phone: 'phone',
+            name: 'name',
+          },
+          child: {
+            name: 'child_name',
+            child_id: 'child_id'
+          },
+          relationship: '爸爸',
+          password: 'password',
+        };
+        var sameParentWithDifferentChild = {
+          parent: {
+            parent_id: 'parent_id',
+            phone: 'phone',
+            name: 'name',
+          },
+          child: {
+            name: 'child_name2',
+            child_id: 'child_id2'
+          },
+          relationship: '爸爸',
+          password: 'password',
+        };
+        var parents = transform.parents([
+          parentInfo, sameParentWithDifferentChild
+        ]);
+        assert.equal(1, parents.length);
+        assert.equal('phone', parents[0].mobile);
+      });
+    });
+    describe('to children', function () {
+      it('should convert from relationship', function () {
+        var children = transform.children([
+          {
+            parent: {
+              parent_id: 'parent_id',
+              phone: 'phone',
+              name: 'name',
+            },
+            child: {
+              name: 'child_name',
+              child_id: 'child_id',
+              class_id: 'class_id'
+            },
+            relationship: '爸爸',
+            password: 'password',
+          }
+        ]);
+        assert.equal(1, children.length);
+        assert.equal('child_id', children[0].source_child_id);
+      });
+      it('should remove duplicates', function () {
+        var fatherInfo = {
+          parent: {
+            parent_id: 'parent_id',
+            phone: 'phone',
+            name: 'name',
+          },
+          child: {
+            name: 'child_name',
+            child_id: 'child_id',
+            class_id: 'class_id'
+          },
+          relationship: '爸爸',
+          password: 'password',
+        };
+        var motherInfo = {
+          parent: {
+            parent_id: 'parent_id2',
+            phone: 'phone2',
+            name: 'name2',
+          },
+          child: {
+            name: 'child_name',
+            child_id: 'child_id',
+            class_id: 'class_id'
+          },
+          relationship: '爸爸',
+          password: 'password',
+        };
+        var children = transform.children([
+          fatherInfo, motherInfo
+        ]);
+        assert.equal(1, children.length);
+        assert.equal('child_id', children[0].source_child_id);
+      });
     });
 
   });

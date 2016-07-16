@@ -35,8 +35,8 @@ function transformParents(relationships) {
   }).value();
 }
 function transformChildren(relationships) {
-  // console.log('transformChildren');
-  return _.map(relationships, function (r) {
+  // console.log('transformChildren', relationships);
+  return _(relationships).uniqBy('child.child_id').map(function (r) {
     return {
       "source_child_id": r.child.child_id,
       "name": r.child.name,
@@ -46,7 +46,7 @@ function transformChildren(relationships) {
       "is_graduation": "0", //0-否，1-是
       "is_in_school": "1" //0-否，1-是
     };
-  })
+  }).value();
 }
 
 function transformEmployees(employees) {
