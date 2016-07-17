@@ -145,4 +145,21 @@ describe('Transform', function () {
     });
 
   });
+  describe('to employees', function () {
+    it('should convert', function () {
+      var employees = transform.employees([
+        {
+          id: 'employee_id',
+          phone: 'phone',
+          name: 'name',
+          birthday: '2010-11-11',
+          gender: 0,
+          subordinate: '',
+          password: 'password',
+        }
+      ]);
+      assert.equal(1, employees.length);
+      assert.equal('phone', employees[0].mobile);
+    });
+  })
 });
