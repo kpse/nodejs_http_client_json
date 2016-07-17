@@ -8,6 +8,10 @@
 
 - transform csv information
 
+### cards.js
+
+- extract all cards information
+
 ## test
 
 - npm test
