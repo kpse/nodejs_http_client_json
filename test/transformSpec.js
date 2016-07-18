@@ -146,7 +146,7 @@ describe('Transform', function () {
 
   });
   describe('to employees', function () {
-    it('should convert', function () {
+    it('should accept single', function () {
       var employees = transform.employees([
         {
           id: 'employee_id',
@@ -160,6 +160,32 @@ describe('Transform', function () {
       ]);
       assert.equal(1, employees.length);
       assert.equal('phone', employees[0].mobile);
+    });
+
+    it('should accept multiple', function () {
+      var employees = transform.employees([
+        {
+          id: 'employee_id',
+          phone: 'phone',
+          name: 'name',
+          birthday: '2010-11-11',
+          gender: 0,
+          subordinate: '',
+          password: 'password',
+        },
+        {
+          id: 'employee_id2',
+          phone: 'phone2',
+          name: 'name2',
+          birthday: '2010-11-11',
+          gender: 0,
+          subordinate: '',
+          password: 'password',
+        }
+      ]);
+      assert.equal(2, employees.length);
+      assert.equal('phone', employees[0].mobile);
+      assert.equal('phone2', employees[1].mobile);
     });
   })
 });
