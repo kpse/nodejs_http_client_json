@@ -8,8 +8,8 @@ var file = require('./src/file');
 
 console.log(process.env.username);
 console.log(process.env.password);
-// var env = '';
-var env = 'stage2.';
+var env = '';
+// var env = 'stage2.';
 
 var credential = {
   account_name: process.env.username || 'username',
@@ -37,7 +37,7 @@ client.post(loginUrl, args, function (data, response) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
     iterateSchools(5, schools, cookies, outputSchool);
-    iterateSchools2(schools);
+    // iterateSchools2(schools);
   })
 });
 
@@ -141,28 +141,34 @@ var outputSchool = function (school, cookie) {
 
   var promiseOfEmployeePass = parseCSV('ref/e_pass.' + env + 'csv', 'phone');
 
+  var promiseOfEmployeeClass = parseCSV('ref/e_class.' + env + 'csv', 'employee_id');
 
   Q.all([promiseOfEmployees, promiseOfRelationships,
-    promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass]).then(function (arr) {
+    promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass, promiseOfEmployeeClass]).then(function (arr) {
     var employees = arr[0];
     var relationships = arr[1];
     var classes = arr[2];
     var pPass = arr[3];
     var ePass = arr[4];
+    var eClass = arr[5];
     // console.log(pPass);
     // console.log(ePass);
+    //  console.log(eClass);
 
     var relationshipsWithPassword = _.map(relationships, function (r) {
       // console.log(r.parent.phone, pPass[r.parent.phone]);
-      r.password = pPass[r.parent.phone] || '';
+      var content = pPass[r.parent.phone] || {password: ''};
+      r.password = content.password;
       return r;
     });
     var employeesWithPassword = _.map(employees, function (e) {
-      var guard = ePass[e.phone] || {subordinate: '', login_password: ''};
+      var guard = ePass[e.phone] || {login_password: ''};
+      var guardSubordinate = eClass[e.id] || {subordinate: ''};
       // console.log(guard);
       // console.log(guard.subordinate);
       e.password = guard.login_password;
-      e.subordinate = guard.subordinate || '';
+      e.subordinate = guardSubordinate.subordinate || 'No Class!';
+      console.log('e.subordinate + ', e.id, e.subordinate);
       return e;
     });
 
