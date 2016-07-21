@@ -166,9 +166,9 @@ var outputSchool = function (school, cookie) {
       var guardSubordinate = eClass[e.id] || {subordinate: ''};
       // console.log(guard);
       // console.log(guard.subordinate);
-      e.password = guard.login_password;
-      e.subordinate = guardSubordinate.subordinate || 'No Class!';
-      console.log('e.subordinate + ', e.id, e.subordinate);
+      e.password = guard.login_password || 'No password!';
+      e.subordinate = guardSubordinate.subordinate || 'No class!';
+      // console.log('e.subordinate + ', e.id, e.subordinate);
       return e;
     });
 
