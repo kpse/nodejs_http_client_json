@@ -8,7 +8,7 @@ var LineByLineReader = require('line-by-line'),
 lr.on('line', function (line) {
   // 'line' contains the current line without the trailing newline character.
   var detailAddress = line.split(',')[2];
-  console.log("address: ", detailAddress);
+  console.log("relationship: ", detailAddress);
   var addressColumns = ',"' + address.provinceOf(detailAddress) + '","' + address.cityOf(detailAddress) + '","' + address.areaOf(detailAddress) + '"';
   fs.appendFileSync("./out/school_video.csv", line.toString() + addressColumns + "\n");
 });
