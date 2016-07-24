@@ -12,5 +12,8 @@ describe('Relationship', function () {
     it('should return 6 for grandfather', function () {
       assert.equal('6', relationship('爷爷'));
     });
+    it('should return 7 for grandfather', function () {
+      assert.equal('7', relationship('姥姥'));
+    });
   });
 });
