@@ -8,8 +8,8 @@ var file = require('./src/file');
 
 console.log(process.env.username);
 console.log(process.env.password);
-var env = '';
-// var env = 'stage2.';
+// var env = '';
+var env = 'stage2.';
 
 var credential = {
   account_name: process.env.username || 'username',
@@ -105,6 +105,7 @@ var outputSchool = function (school, cookie) {
 
   console.log('school starting: ' + school.school_id);
   var s = school;
+  console.log('school detail: ', s);
   var content = {
     "school_info": {
       "source_id": s.school_id.toString(),
@@ -114,7 +115,9 @@ var outputSchool = function (school, cookie) {
       "city": address.cityOf(s.address),
       "area": address.areaOf(s.address),
       "detailed_address": s.address,
-      "school_linkphone": s.phone
+      "school_linkphone": s.phone,
+      "logo_url": s.school_logo_url,
+      "create_time": timeFormat(s.created_at)
     }
   };
 
@@ -247,4 +250,8 @@ function pickUpPrincipal(employees) {
     "password": principal.password,
     "introduction": ""
   };
+}
+
+function timeFormat(ts) {
+  return new Date(ts + 8*3600000).toISOString().replace('T', ' ').replace(/\..+/, '');
 }
