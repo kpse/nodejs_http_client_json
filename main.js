@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var Q = require('q');
 var parseCSV = require('./src/parseCSV').parseCSV;
+var accumulateCSV = require('./src/parseCSV').accumulateCSV;
 var address = require('./src/address');
 var transform = require('./src/transform');
 var display = require('./src/display');
@@ -105,7 +106,6 @@ var outputSchool = function (school, cookie) {
 
   console.log('school starting: ' + school.school_id);
   var s = school;
-  console.log('school detail: ', s);
   var content = {
     "school_info": {
       "source_id": s.school_id.toString(),
@@ -144,7 +144,7 @@ var outputSchool = function (school, cookie) {
 
   var promiseOfEmployeePass = parseCSV('ref/e_pass.' + env + 'csv', 'phone');
 
-  var promiseOfEmployeeClass = parseCSV('ref/e_class.' + env + 'csv', 'employee_id');
+  var promiseOfEmployeeClass = accumulateCSV('ref/e_class.' + env + 'csv', 'employee_id');
 
   Q.all([promiseOfEmployees, promiseOfRelationships,
     promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass, promiseOfEmployeeClass]).then(function (arr) {
@@ -166,11 +166,11 @@ var outputSchool = function (school, cookie) {
     });
     var employeesWithPassword = _.map(employees, function (e) {
       var guard = ePass[e.phone] || {login_password: ''};
-      var guardSubordinate = eClass[e.id] || {subordinate: ''};
+      var guardSubordinate = eClass[e.id] || [{subordinate: ''}];
       // console.log(guard);
       // console.log(guard.subordinate);
       e.password = guard.login_password || 'No password!';
-      e.subordinate = guardSubordinate.subordinate || 'No class!';
+      e.subordinate = _.uniq(_.map(guardSubordinate, 'subordinate'));
       // console.log('e.subordinate + ', e.id, e.subordinate);
       return e;
     });

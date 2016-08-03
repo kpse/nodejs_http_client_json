@@ -32,7 +32,25 @@ function mapCSV(fileName) {
   return deferred.promise;
 }
 
+function accumulateCSV(fileName, fieldName) {
+  var fieldName = fieldName || 'sender';
+  var fileName = fileName;
+  var deferred = Q.defer();
+  var dic = {};
+  fs.createReadStream(fileName)
+    .pipe(csv())
+    .on('data', function (data) {
+      var existing = dic[data[fieldName]] || [];
+      existing.push(data);
+      dic[data[fieldName]] = existing;
+    }).on('end', function () {
+    deferred.resolve(dic);
+  });
+  return deferred.promise;
+}
+
 module.exports = {
   parseCSV: parseCSV,
-  mapCSV: mapCSV
+  mapCSV: mapCSV,
+  accumulateCSV: accumulateCSV
 }
