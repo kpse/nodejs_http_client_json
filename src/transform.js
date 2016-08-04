@@ -10,6 +10,7 @@ function transformParents(relationships) {
       "mobile": r.parent.phone,
       "name": r.parent.name,
       "password": r.password,
+      "avatar": r.parent.portrait,
       "sex": display.gender(r.parent.gender),
       "source_child_id": r.child.child_id,
       "relation_type": relationshipTranslate(r.relationship)
@@ -60,6 +61,7 @@ function transformEmployees(employees) {
       "password": e.password,
       "birthday": e.birthday + " 00:00:00",
       "sex": display.gender(e.gender), //0-未知，1-男，2-女
+      "avatar": e.portrait,
       "source_class_id": e.subordinate
     };
   });
