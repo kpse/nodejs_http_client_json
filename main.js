@@ -157,11 +157,17 @@ var outputSchool = function (school, cookie) {
     // console.log(pPass);
     // console.log(ePass);
     //  console.log(eClass);
+    var allClassIds = _.map(classes, function(cls) {
+      return cls.class_id;
+    });
 
     var relationshipsWithPassword = _.map(relationships, function (r) {
       // console.log(r.parent.phone, pPass[r.parent.phone]);
       var content = pPass[r.parent.phone] || {password: ''};
       r.password = content.password;
+      if(!_.some(allClassIds, function (i) {return r.child.class_id == i;})) {
+        console.log('class is not existing!', r, r.child.class_id, allClassIds);
+      }
       return r;
     });
     var employeesWithPassword = _.map(employees, function (e) {
@@ -170,7 +176,7 @@ var outputSchool = function (school, cookie) {
       // console.log(guard);
       // console.log(guard.subordinate);
       e.password = guard.login_password || 'No password!';
-      e.subordinate = _.uniq(_.map(guardSubordinate, 'subordinate'));
+      e.subordinate = filterNonExistingClass(allClassIds, _.uniq(_.map(guardSubordinate, 'subordinate')), e);
       // console.log('e.subordinate + ', e.id, e.subordinate);
       return e;
     });
@@ -248,10 +254,24 @@ function pickUpPrincipal(employees) {
     "mobile": principal.phone,
     "name": principal.name,
     "password": principal.password,
+    "sex": display.gender(principal.gender),
     "introduction": ""
   };
 }
 
 function timeFormat(ts) {
   return new Date(ts + 8*3600000).toISOString().replace('T', ' ').replace(/\..+/, '');
+}
+
+function filterNonExistingClass(allClasses, subordinate, employee) {
+  // console.log('allClasses', allClasses);
+  // console.log('subordinate', subordinate);
+  var ret = _.filter(subordinate, function(c) {
+    return _.some(allClasses, function (target) {
+      return c.toString() == target;
+    });
+  });
+  if(ret.length != subordinate.length)
+    console.log('employees subordinates filtered? ', allClasses, _.compact(subordinate), ret, employee);
+  return ret;
 }
