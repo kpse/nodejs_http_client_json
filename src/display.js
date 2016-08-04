@@ -1,5 +1,5 @@
 function genderDisplay(gender) {
-  return gender == 0 ? '1' : '2';
+  return gender == 0 ? '2' : '1';
 }
 
 function timeDisplay(timestamp) {

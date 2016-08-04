@@ -10,6 +10,7 @@ function transformParents(relationships) {
       "mobile": r.parent.phone,
       "name": r.parent.name,
       "password": r.password,
+      "sex": display.gender(r.parent.gender),
       "source_child_id": r.child.child_id,
       "relation_type": relationshipTranslate(r.relationship)
     };
