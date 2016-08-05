@@ -84,7 +84,6 @@ var mappingTeacherSessions = function (sessions) {
       "content": s.content,
       "img_path": [],
       "video_path": "",
-      "is_public": "0",
       "create_time": display.time(s.update_at)
     };
     if (s.media_type == 'video') {
@@ -105,7 +104,6 @@ var mappingParentSessions = function (sessions) {
       "content": s.content,
       "img_path": [],
       "video_path": "",
-      "is_public": "0",
       "create_time": display.time(s.update_at)
     };
     if (s.media_type == 'video') {
@@ -114,6 +112,25 @@ var mappingParentSessions = function (sessions) {
       item["img_path"] = s.media_url.split('  ');
     }
     return item;
+  });
+};
+
+var mappingNews = function (news) {
+  console.log(news);
+  return _.map(news, function (s) {
+    // var buf = new Buffer(s.content, 'base64');
+    // console.log('base64 buf ', buf.toString());
+    // console.log('==============================');
+    return {
+      "source_person_id": s.publisher_id,
+      "role": '1',
+      "notify_type": '1',
+      "source_class_id": [],
+      "content": s.content,
+      "img_path": [s.image],
+      "video_path": "",
+      "create_time": display.time(s.update_at)
+    };
   });
 };
 
@@ -128,5 +145,6 @@ module.exports = {
   employees: transformEmployees,
   classes: transformClass,
   mapToTeachers: mappingTeacherSessions,
-  mapToParents: mappingParentSessions
+  mapToParents: mappingParentSessions,
+  mapToNews: mappingNews
 };

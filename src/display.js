@@ -3,7 +3,7 @@ function genderDisplay(gender) {
 }
 
 function timeDisplay(timestamp) {
-  return new Date(Number(timestamp)).toISOString().slice(0, 19).replace(/T/g, " ");
+  return new Date(Number(timestamp) + 8*3600000).toISOString().slice(0, 19).replace(/T/g, " ");
 }
 
 module.exports = {

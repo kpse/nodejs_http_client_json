@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var Q = require('q');
 var parseCSV = require('./src/parseCSV').parseCSV;
+var parseLongStringCSV = require('./src/parseCSV').parseLongStringCSV;
 var accumulateCSV = require('./src/parseCSV').accumulateCSV;
 var address = require('./src/address');
 var transform = require('./src/transform');
@@ -37,8 +38,8 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    iterateSchools(5, schools, cookies, outputSchool);
-    // iterateSchools2(schools);
+    // iterateSchools(5, schools, cookies, outputSchool);
+    iterateSchoolsForDynamic(schools);
   })
 });
 
@@ -65,27 +66,26 @@ function iterateSchools(piece, schools, cookies, processFn) {
   });
 }
 
-function iterateSchools2(schools) {
+function iterateSchoolsForDynamic(schools) {
 
-  var promiseOfParentSession = parseCSV('ref/p_session.' + env + 'csv', 'sender');
+  var promiseOfParentSession = accumulateCSV('ref/p_session.' + env + 'csv', 'school_id');
 
-  var promiseOfEmployeeSession = parseCSV('ref/e_session.' + env + 'csv', 'sender');
+  var promiseOfEmployeeSession = accumulateCSV('ref/e_session.' + env + 'csv', 'school_id');
 
-  Q.all([promiseOfParentSession, promiseOfEmployeeSession]).then(function (arr) {
-    var parents = arr[0];
-    var employees = arr[1];
-    // console.log(employees);
-    // console.log(parents);
+  var promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', '﻿"school_id"');
 
-    var employeesDic = _.groupBy(employees, 'school_id');
-    var parentsDic = _.groupBy(parents, 'school_id');
-
-    // console.log(employeesDic);
-    // console.log(parentsDic);
+  Q.all([promiseOfParentSession, promiseOfEmployeeSession, promiseOfNews]).then(function (arr) {
+    var parentsDic = arr[0];
+    var employeesDic = arr[1];
+    var allNews = arr[2];
+    // console.log('parentsDic = ' + parentsDic);
+    // console.log('employeesDic = ' + employeesDic);
+    // console.log('allNews = ', allNews);
 
     _.each(schools, function (school) {
       outputHistory(school, employeesDic[school.school_id.toString()] || [],
-        parentsDic[school.school_id.toString()] || []);
+        parentsDic[school.school_id.toString()] || [],
+        allNews[school.school_id.toString()] || []);
     });
 
   }, function (err) {
@@ -197,10 +197,11 @@ var outputSchool = function (school, cookie) {
   return writeTask.promise;
 };
 
-var outputHistory = function (school, employeesDic, parentsDic) {
+var outputHistory = function (school, employeesDic, parentsDic, newsDic) {
 
-  if (file.isExisting(school.full_name)) {
+  if (file.isExisting('dynamic-' + school.school_id + '-' + school.full_name)) {
     console.log('skipping, school is existing: ' + school.school_id);
+    return;
   }
 
   console.log('school starting history: ' + school.school_id);
@@ -210,15 +211,17 @@ var outputHistory = function (school, employeesDic, parentsDic) {
       "source_id": s.school_id.toString(),
       "school_name": s.full_name,
       "dynamic_list_teacher": [],
-      "dynamic_list_parent": []
+      "dynamic_list_parent": [],
+      "notify_list_class": []
     }
   };
 
   content['school_info']['dynamic_list_teacher'] = transform.mapToTeachers(employeesDic);
   content['school_info']['dynamic_list_parent'] = transform.mapToParents(parentsDic);
+  content['school_info']['notify_list_class'] = transform.mapToNews(newsDic);
 
 
-  file.dynamicOutput(school.full_name, content);
+  file.dynamicOutput(school.school_id + '-' + school.full_name, content);
   console.log('school dynamic done: ' + school.school_id);
 };
 
