@@ -78,7 +78,13 @@ function transformClass(classes) {
 }
 
 var mappingTeacherSessions = function (sessions) {
-  return _.map(sessions, function (s) {
+   var compactSessions = _.uniqBy(sessions, function (duplicated) {
+     var key = duplicated.sender + '_' + Math.round(Number(duplicated.update_at) / 500) + '' + duplicated.content + '_' + duplicated.media_url;
+     // console.log('unique key = ', key);
+     return key;
+   });
+  // console.log('compactSessions', compactSessions);
+  return _.map(compactSessions, function (s) {
     var item = {
       "source_teacher_id": s.sender,
       "content": s.content,
