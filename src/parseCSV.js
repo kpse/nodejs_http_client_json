@@ -18,6 +18,22 @@ function parseCSV(fileName, fieldName) {
   return deferred.promise;
 }
 
+function parseCSVWithIndex(fileName, index) {
+  var fieldIndex = index || 0;
+  var fileName = fileName;
+  var deferred = Q.defer();
+  var dic = {};
+  fs.createReadStream(fileName)
+    .pipe(csv())
+    .on('data', function (data) {
+      // console.log(data);
+      dic[data[data.headers[index]]] = data
+    }).on('end', function () {
+    deferred.resolve(dic);
+  });
+  return deferred.promise;
+}
+
 function mapCSV(fileName) {
   var deferred = Q.defer();
   var result = [];
@@ -52,5 +68,6 @@ function accumulateCSV(fileName, fieldName) {
 module.exports = {
   parseCSV: parseCSV,
   mapCSV: mapCSV,
+  parseCSVWithIndex: parseCSVWithIndex,
   accumulateCSV: accumulateCSV
 }

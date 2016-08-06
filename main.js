@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var Q = require('q');
 var parseCSV = require('./src/parseCSV').parseCSV;
-var parseLongStringCSV = require('./src/parseCSV').parseLongStringCSV;
+var parseCSVWithIndex = require('./src/parseCSV').parseCSVWithIndex;
 var accumulateCSV = require('./src/parseCSV').accumulateCSV;
 var address = require('./src/address');
 var transform = require('./src/transform');
@@ -38,8 +38,8 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    // iterateSchools(5, schools, cookies, outputSchool);
-    iterateSchoolsForDynamic(schools);
+    iterateSchools(5, schools, cookies, outputSchool);
+    // iterateSchoolsForDynamic(schools);
   })
 });
 
@@ -140,7 +140,7 @@ var outputSchool = function (school, cookie) {
   var promiseOfClasses = classDefer.promise;
 
 
-  var promiseOfParentPass = parseCSV('ref/p_pass.' + env + 'csv', 'phone');
+  var promiseOfParentPass = parseCSVWithIndex('ref/p_pass.' + env + 'csv', 0);
 
   var promiseOfEmployeePass = parseCSV('ref/e_pass.' + env + 'csv', 'phone');
 
