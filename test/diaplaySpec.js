@@ -12,4 +12,9 @@ describe('Display', function () {
       assert.equal('1', display.gender('-1'));
     });
   });
+  describe('time()', function () {
+    it('should return GMT+8 time', function () {
+      assert.equal('2016-08-07 17:57:20', display.time('1470563840000'));
+    });
+  });
 });
