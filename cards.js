@@ -3,8 +3,8 @@ var Q = require('q');
 var csv = require('./src/parseCSV');
 var file = require('./src/file');
 
-// var env = '';
-var env = 'stage2.';
+var env = '';
+// var env = 'stage2.';
 
 var mapCSV = csv.mapCSV;
 var parseCSV = csv.parseCSV;
