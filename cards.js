@@ -41,23 +41,20 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
   });
 
 
-  file.write('空白卡', unusedTransform(unused));
+  file.write('device-空白卡', unusedTransform(unused));
   console.log('school done: ' + school.school_id);
 
 });
 
 function unusedTransform(info) {
   return {
-    "card_info": {
+    "school_name": "空白卡",
       "card_list": _.map(info, function (card) {
         return {
           "card_no": card[CARD_FIELD],
-          "mac_id": card[CARD_FIELD],
-          "create_time": "2016-06-12 18:18:18",
-          "origin": "youlebao"
+          "create_time": "2016-06-12 18:18:18"
         }
       })
-    }
   };
 }
 
