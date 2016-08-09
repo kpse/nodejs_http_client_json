@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 function filterNonExistingClass(allClasses, subordinate, employee) {
   // console.log('allClasses', allClasses);
   // console.log('subordinate', subordinate);
