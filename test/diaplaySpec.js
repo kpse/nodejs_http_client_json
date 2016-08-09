@@ -16,5 +16,11 @@ describe('Display', function () {
     it('should return GMT+8 time', function () {
       assert.equal('2016-08-07 17:57:20', display.time('1470563840000'));
     });
+  })
+
+  describe('digit Time', function () {
+    it('should return GMT+8 time', function () {
+      assert.equal('2016-08-07 17:57:20', display.digitalTime(1470563840000));
+    });
   });
 });
