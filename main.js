@@ -7,6 +7,7 @@ var address = require('./src/address');
 var transform = require('./src/transform');
 var display = require('./src/display');
 var file = require('./src/file');
+var filterNonExistingClass = require('./src/classesFunctions');
 
 console.log(process.env.username);
 console.log(process.env.password);
@@ -117,7 +118,7 @@ var outputSchool = function (school, cookie) {
       "detailed_address": s.address,
       "school_linkphone": s.phone,
       "logo_url": s.school_logo_url,
-      "create_time": timeFormat(s.created_at)
+      "create_time": display.digitalTime(s.created_at)
     }
   };
 
@@ -260,21 +261,4 @@ function pickUpPrincipal(employees) {
     "sex": display.gender(principal.gender),
     "introduction": ""
   };
-}
-
-function timeFormat(ts) {
-  return new Date(ts + 8*3600000).toISOString().replace('T', ' ').replace(/\..+/, '');
-}
-
-function filterNonExistingClass(allClasses, subordinate, employee) {
-  // console.log('allClasses', allClasses);
-  // console.log('subordinate', subordinate);
-  var ret = _.filter(subordinate, function(c) {
-    return _.some(allClasses, function (target) {
-      return c.toString() == target;
-    });
-  });
-  if(ret.length != subordinate.length)
-    console.log('employees subordinates filtered? ', allClasses, _.compact(subordinate), ret, employee);
-  return ret;
 }
