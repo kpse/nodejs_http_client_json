@@ -39,7 +39,7 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    iterateSchools(5, schools, cookies, outputSchool);
+    // iterateSchools(5, schools, cookies, outputSchool);
     iterateSchoolsForDynamic(schools);
   })
 });
@@ -73,7 +73,7 @@ function iterateSchoolsForDynamic(schools) {
 
   var promiseOfEmployeeSession = accumulateCSV('ref/e_session.' + env + 'csv', 'school_id');
 
-  var promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', '﻿"school_id"');
+  var promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', 'school_id');
 
   Q.all([promiseOfParentSession, promiseOfEmployeeSession, promiseOfNews]).then(function (arr) {
     var parentsDic = arr[0];

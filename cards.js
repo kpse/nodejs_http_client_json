@@ -64,7 +64,7 @@ var outputCards = function (school, name, employees, children) {
   var content = {
       "source_school_id": school.toString(),
       "school_name": name,
-      "card_list": _.flatten(employeeCards(employees), childrenCards(children))
+      "card_list": _.flatten([employeeCards(employees), childrenCards(children)])
   };
 
   file.write('device_' + school + '_' + name, content);

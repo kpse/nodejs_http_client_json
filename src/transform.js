@@ -122,7 +122,6 @@ var mappingParentSessions = function (sessions) {
 };
 
 var mappingNews = function (news) {
-  console.log(news);
   return _.map(news, function (s) {
     // var buf = new Buffer(s.content, 'base64');
     // console.log('base64 buf ', buf.toString());
@@ -131,7 +130,7 @@ var mappingNews = function (news) {
       "source_person_id": s.publisher_id,
       "role": '1',
       "notify_type": '1',
-      "source_class_id": [],
+      "source_class_id": [s.class_id + ''],
       "content": s.content,
       "img_path": [s.image],
       "video_path": "",
