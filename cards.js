@@ -10,7 +10,7 @@ var mapCSV = csv.mapCSV;
 var parseCSV = csv.parseCSV;
 
 var SCHOOL_FIELD = '﻿school_id';
-var CARD_FIELD = '﻿card';
+var CARD_FIELD = 'card';
 
 var promiseOfChildrenCard = mapCSV('ref/children_card.' + env + 'csv');
 
