@@ -3,3 +3,5 @@ node_modules
 out/
 ref/
 out-dynamic/
+*.zip
+result/

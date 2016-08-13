@@ -39,7 +39,7 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    // iterateSchools(5, schools, cookies, outputSchool);
+    iterateSchools(5, schools, cookies, outputSchool);
     iterateSchoolsForDynamic(schools);
   })
 });
