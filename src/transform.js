@@ -141,7 +141,22 @@ var mappingNews = function (news) {
 
 function retrieveChildId(sessionId) {
   return sessionId.substring(2);
-}
+};
+
+function pickUpPrincipal(employees) {
+  // console.log('pickUpPrincipal', employees);
+  var principal = _.find(employees, function (e) {
+    return e.privilege_group == 'principal';
+  });
+  return principal == undefined ? {} : {
+    "source_master_id": principal.id,
+    "mobile": principal.phone,
+    "name": principal.name,
+    "password": principal.password,
+    "sex": display.gender(principal.gender),
+    "introduction": ""
+  };
+};
 
 
 module.exports = {
@@ -150,6 +165,7 @@ module.exports = {
   employees: transformEmployees,
   classes: transformClass,
   mapToTeachers: mappingTeacherSessions,
+  pickUpPrincipal: pickUpPrincipal,
   mapToParents: mappingParentSessions,
   mapToNews: mappingNews
 };

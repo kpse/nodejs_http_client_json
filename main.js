@@ -11,8 +11,8 @@ var filterNonExistingClass = require('./src/classesFunctions');
 
 console.log(process.env.username);
 console.log(process.env.password);
-var env = '';
-// var env = 'stage2.';
+// var env = '';
+var env = 'stage2.';
 
 var credential = {
   account_name: process.env.username || 'username',
@@ -39,7 +39,7 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    iterateSchools(5, schools, cookies, outputSchool);
+    // iterateSchools(5, schools, cookies, outputSchool);
     iterateSchoolsForDynamic(schools);
   })
 });
@@ -182,7 +182,7 @@ var outputSchool = function (school, cookie) {
       return e;
     });
 
-    content['school_info']['master_info'] = pickUpPrincipal(employeesWithPassword);
+    content['school_info']['master_info'] = transform.pickUpPrincipal(employeesWithPassword);
     content['school_info']['teacher_list'] = transform.employees(employeesWithPassword);
     content['school_info']['class_list'] = transform.classes(classes);
     content['school_info']['parent_list'] = transform.parents(relationshipsWithPassword);
@@ -243,22 +243,4 @@ var relationshipUrl = function (school) {
 
 function transferCookie(res) {
   return {headers: {cookie: res.headers['set-cookie'], "Content-Type": "application/json"}}
-}
-
-// output
-
-
-function pickUpPrincipal(employees) {
-  // console.log('pickUpPrincipal', employees);
-  var principal = _.find(employees, function (e) {
-    return e.privilege_group == 'principal';
-  });
-  return principal == undefined ? {} : {
-    "source_master_id": principal.id,
-    "mobile": principal.phone,
-    "name": principal.name,
-    "password": principal.password,
-    "sex": display.gender(principal.gender),
-    "introduction": ""
-  };
 }
