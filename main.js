@@ -8,11 +8,12 @@ var transform = require('./src/transform');
 var display = require('./src/display');
 var file = require('./src/file');
 var filterNonExistingClass = require('./src/classesFunctions');
+var constants = require('./src/constants');
 
 console.log(process.env.username);
 console.log(process.env.password);
-// var env = '';
-var env = 'stage2.';
+var env = '';
+// var env = 'stage2.';
 
 var credential = {
   account_name: process.env.username || 'username',
@@ -39,7 +40,7 @@ client.post(loginUrl, args, function (data, response) {
   client.get(allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    // iterateSchools(5, schools, cookies, outputSchool);
+    iterateSchools(5, schools, cookies, outputSchool);
     iterateSchoolsForDynamic(schools);
   })
 });
@@ -123,19 +124,19 @@ var outputSchool = function (school, cookie) {
   };
 
   var employeesDefer = Q.defer();
-  client.get(employeeUrl(school), cookie, function (all) {
+  client.get(constants.employeeUrl(school), cookie, function (all) {
     employeesDefer.resolve(all);
   });
   var promiseOfEmployees = employeesDefer.promise;
 
   var relationshipsDefer = Q.defer();
-  client.get(relationshipUrl(school), cookie, function (all) {
+  client.get(constants.relationshipUrl(school), cookie, function (all) {
     relationshipsDefer.resolve(all);
   });
   var promiseOfRelationships = relationshipsDefer.promise;
 
   var classDefer = Q.defer();
-  client.get(classUrl(school), cookie, function (all) {
+  client.get(constants.classUrl(school), cookie, function (all) {
     classDefer.resolve(all);
   });
   var promiseOfClasses = classDefer.promise;
@@ -227,19 +228,6 @@ var outputHistory = function (school, employeesDic, parentsDic, newsDic) {
 };
 
 //private
-
-var classUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/class';
-};
-
-var employeeUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/employee?most=5000';
-};
-
-var relationshipUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/relationship';
-};
-
 
 function transferCookie(res) {
   return {headers: {cookie: res.headers['set-cookie'], "Content-Type": "application/json"}}
