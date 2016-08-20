@@ -10,5 +10,9 @@ describe('Class functions', function () {
     it('should give out empty if no classes in the school', function () {
       assert.deepEqual([], classesFunction([], [2, 3]));
     });
+
+    it('should handle all empty case', function () {
+      assert.deepEqual([], classesFunction([], []));
+    });
   });
 });
