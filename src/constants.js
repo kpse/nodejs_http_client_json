@@ -1,3 +1,11 @@
+var env = '';
+// var env = 'stage2.';
+
+
+var host = "https://" + env + "cocobabys.com";
+var loginUrl = host + "/employee_login.do";
+var allSchools = host + "/kindergarten";
+
 var classUrl = function (school) {
   return host + "/kindergarten/" + school.school_id + '/class';
 };
@@ -14,5 +22,8 @@ var relationshipUrl = function (school) {
 module.exports = {
   classUrl: classUrl,
   employeeUrl: employeeUrl,
-  relationshipUrl: relationshipUrl
+  relationshipUrl: relationshipUrl,
+  loginUrl: loginUrl,
+  allSchools: allSchools,
+  env: env
 }

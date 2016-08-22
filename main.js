@@ -12,8 +12,8 @@ var constants = require('./src/constants');
 
 console.log(process.env.username);
 console.log(process.env.password);
-var env = '';
-// var env = 'stage2.';
+
+var env = constants.env;
 
 var credential = {
   account_name: process.env.username || 'username',
@@ -29,15 +29,10 @@ var args = {
   headers: {"Content-Type": "application/json"}
 };
 
-var host = "https://" + env + "cocobabys.com";
-var loginUrl = host + "/employee_login.do";
-var allSchools = host + "/kindergarten";
-
-
-client.post(loginUrl, args, function (data, response) {
+client.post(constants.loginUrl, args, function (data, response) {
 
   var cookies = transferCookie(response);
-  client.get(allSchools, cookies, function (all) {
+  client.get(constants.allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
     iterateSchools(5, schools, cookies, outputSchool);
@@ -108,6 +103,7 @@ var outputSchool = function (school, cookie) {
 
   console.log('school starting: ' + school.school_id);
   var s = school;
+  // console.log("school: ", s);
   var content = {
     "school_info": {
       "source_id": s.school_id.toString(),
