@@ -189,8 +189,15 @@ describe('Transform', function () {
     });
   });
   describe('to class info', function () {
-    it('should pick up child id', function () {
+    it('should handle empty input', function () {
       assert.deepEqual([], transform.classes([]));
+    });
+    it('should handle empty input', function () {
+      assert.deepEqual([{
+        "source_class_id": '123',
+        "class_name": 'name',
+        "is_graduation": "0"
+      }], transform.classes([{class_id: 123, name: 'name'}]));
     });
   });
 });
