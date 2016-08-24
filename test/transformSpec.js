@@ -187,5 +187,10 @@ describe('Transform', function () {
       assert.equal('phone', employees[0].mobile);
       assert.equal('phone2', employees[1].mobile);
     });
-  })
+  });
+  describe('to class info', function () {
+    it('should pick up child id', function () {
+      assert.deepEqual([], transform.classes([]));
+    });
+  });
 });
