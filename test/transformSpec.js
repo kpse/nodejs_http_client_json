@@ -192,7 +192,7 @@ describe('Transform', function () {
     it('should handle empty input', function () {
       assert.deepEqual([], transform.classes([]));
     });
-    it('should handle empty input', function () {
+    it('should transform class information', function () {
       assert.deepEqual([{
         "source_class_id": '123',
         "class_name": 'name',
