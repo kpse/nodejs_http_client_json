@@ -199,5 +199,17 @@ describe('Transform', function () {
         "is_graduation": "0"
       }], transform.classes([{class_id: 123, name: 'name'}]));
     });
+
+    it('should transform multiple classes', function () {
+      assert.deepEqual([{
+        "source_class_id": '123',
+        "class_name": 'name',
+        "is_graduation": "0"
+      }, {
+        "source_class_id": '456',
+        "class_name": 'name2',
+        "is_graduation": "0"
+      }], transform.classes([{class_id: 123, name: 'name'}, {class_id: 456, name: 'name2'}]));
+    });
   });
 });
