@@ -29,14 +29,23 @@ var args = {
   headers: {"Content-Type": "application/json"}
 };
 
+function filterInternalSchools(schools) {
+  return _.reject(schools, function (school) {
+    var id = school.school_id;
+    return id < 2010 || _.some([2041, 2043, 2070], function (i) {
+        return i == id;
+      })
+  });
+}
 client.post(constants.loginUrl, args, function (data, response) {
 
   var cookies = transferCookie(response);
   client.get(constants.allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    iterateSchools(5, schools, cookies, outputSchool);
-    iterateSchoolsForDynamic(schools);
+    var filtered = filterInternalSchools(schools);
+    iterateSchools(5, filtered, cookies, outputSchool);
+    // iterateSchoolsForDynamic(filtered);
   })
 });
 
