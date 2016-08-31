@@ -9,7 +9,7 @@ var env = '';
 var mapCSV = csv.mapCSV;
 var parseCSV = csv.parseCSV;
 
-var SCHOOL_FIELD = '﻿school_id';
+var SCHOOL_FIELD = 'school_id';
 var CARD_FIELD = 'card';
 
 var promiseOfChildrenCard = mapCSV('ref/children_card.' + env + 'csv');
@@ -27,10 +27,10 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
   var unused = arr[2];
   var schoolInfo = arr[3];
 
-  console.log(children[0]);
-  console.log(employees[0]);
-  console.log(unused[0]);
-  console.log(schoolInfo);
+  console.log('children', children[0]);
+  console.log('employees', employees[0]);
+  console.log('unused', unused[0]);
+  console.log('schoolInfo', schoolInfo);
 
   var employeesDic = _.groupBy(employees, SCHOOL_FIELD);
   var childrenDic = _.groupBy(children, SCHOOL_FIELD);
