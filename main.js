@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var Q = require('q');
 var parseCSV = require('./src/parseCSV').parseCSV;
-var parseCSVWithIndex = require('./src/parseCSV').parseCSVWithIndex;
+// var parseCSVWithIndex = require('./src/parseCSV').parseCSVWithIndex;
 var accumulateCSV = require('./src/parseCSV').accumulateCSV;
 var address = require('./src/address');
 var transform = require('./src/transform');
@@ -147,7 +147,7 @@ var outputSchool = function (school, cookie) {
   var promiseOfClasses = classDefer.promise;
 
 
-  var promiseOfParentPass = parseCSVWithIndex('ref/p_pass.' + env + 'csv', 0);
+  var promiseOfParentPass = parseCSV('ref/p_pass.' + env + 'csv', 'phone');
 
   var promiseOfEmployeePass = parseCSV('ref/e_pass.' + env + 'csv', 'phone');
 
