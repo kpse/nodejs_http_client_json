@@ -27,10 +27,10 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
   var unused = arr[2];
   var schoolInfo = arr[3];
 
-  console.log('children', children[0]);
-  console.log('employees', employees[0]);
-  console.log('unused', unused[0]);
-  console.log('schoolInfo', schoolInfo);
+  // console.log('children', children[0]);
+  // console.log('employees', employees[0]);
+  // console.log('unused', unused[0]);
+  // console.log('schoolInfo', schoolInfo);
 
   var employeesDic = _.groupBy(employees, SCHOOL_FIELD);
   var childrenDic = _.groupBy(children, SCHOOL_FIELD);
