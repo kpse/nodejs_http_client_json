@@ -3,6 +3,8 @@ var Q = require('q');
 var csv = require('./src/parseCSV');
 var file = require('./src/file');
 
+var takeTargetSchoolOnly = require('./target_schools').filterSchoolId;
+
 var env = '';
 // var env = 'stage2.';
 
@@ -35,7 +37,7 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
   var employeesDic = _.groupBy(employees, SCHOOL_FIELD);
   var childrenDic = _.groupBy(children, SCHOOL_FIELD);
 
-  _.each(_.keys(schoolInfo), function (school) {
+  _.each(takeTargetSchoolOnly(_.keys(schoolInfo)), function (school) {
     outputCards(school, schoolInfo[school.toString()].full_name, employeesDic[school.toString()] || [],
       childrenDic[school.toString()] || []);
   });

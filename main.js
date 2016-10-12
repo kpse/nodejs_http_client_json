@@ -9,7 +9,7 @@ var display = require('./src/display');
 var file = require('./src/file');
 var filterNonExistingClass = require('./src/classesFunctions');
 var constants = require('./src/constants');
-
+var takeTargetSchoolOnly = require('./target_schools').filterSchool;
 console.log(process.env.username);
 console.log(process.env.password);
 
@@ -37,14 +37,16 @@ function filterInternalSchools(schools) {
       })
   });
 }
+
 client.post(constants.loginUrl, args, function (data, response) {
 
   var cookies = transferCookie(response);
   client.get(constants.allSchools, cookies, function (all) {
     var schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    var filtered = filterInternalSchools(schools);
-    iterateSchools(5, filtered, cookies, outputSchool);
+    // var filtered = filterInternalSchools(schools);
+    var filtered = takeTargetSchoolOnly(schools);
+    iterateSchools(10, filtered, cookies, outputSchool);
     // iterateSchoolsForDynamic(filtered);
   })
 });
