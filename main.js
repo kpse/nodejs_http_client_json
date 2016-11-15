@@ -46,8 +46,9 @@ client.post(constants.loginUrl, args, function (data, response) {
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
     // var filtered = filterInternalSchools(schools);
     var filtered = takeTargetSchoolOnly(schools);
-    iterateSchools(10, filtered, cookies, outputSchool);
-    // iterateSchoolsForDynamic(filtered);
+    console.log('filtered', filtered);
+    // iterateSchools(10, filtered, cookies, outputSchool);
+    iterateSchoolsForDynamic(filtered);
   })
 });
 

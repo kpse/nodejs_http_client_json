@@ -43,7 +43,7 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
   });
 
 
-  file.write('device-空白卡', unusedTransform(unused));
+  // file.write('device-空白卡', unusedTransform(unused));
   console.log('school done: ' + school.school_id);
 
 });
