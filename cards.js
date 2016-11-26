@@ -1,43 +1,45 @@
-var _ = require('lodash');
-var Q = require('q');
-var csv = require('./src/parseCSV');
-var file = require('./src/file');
+'use strict';
 
-var takeTargetSchoolOnly = require('./target_schools').filterSchoolId;
+const _ = require('lodash');
+const Q = require('q');
+const csv = require('./src/parseCSV');
+const file = require('./src/file');
 
-var env = '';
-// var env = 'stage2.';
+const takeTargetSchoolOnly = require('./target_schools').filterSchoolId;
 
-var mapCSV = csv.mapCSV;
-var parseCSV = csv.parseCSV;
+const env = '';
+// const env = 'stage2.';
 
-var SCHOOL_FIELD = 'school_id';
-var CARD_FIELD = 'card';
+const mapCSV = csv.mapCSV;
+const parseCSV = csv.parseCSV;
 
-var promiseOfChildrenCard = mapCSV('ref/children_card.' + env + 'csv');
+const SCHOOL_FIELD = 'school_id';
+const CARD_FIELD = 'card';
 
-var promiseOfEmployeeCard = mapCSV('ref/employee_card.' + env + 'csv');
+const promiseOfChildrenCard = mapCSV('ref/children_card.' + env + 'csv');
 
-var promiseOfEmptyCard = mapCSV('ref/empty_card.' + env + 'csv');
+const promiseOfEmployeeCard = mapCSV('ref/employee_card.' + env + 'csv');
 
-var promiseOfSchool = parseCSV('ref/school_info.' + env + 'csv', SCHOOL_FIELD);
+const promiseOfEmptyCard = mapCSV('ref/empty_card.' + env + 'csv');
+
+const promiseOfSchool = parseCSV('ref/school_info.' + env + 'csv', SCHOOL_FIELD);
 
 
-Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promiseOfSchool]).then(function (arr) {
-  var children = arr[0];
-  var employees = arr[1];
-  var unused = arr[2];
-  var schoolInfo = arr[3];
+Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promiseOfSchool]).then((arr) => {
+  const children = arr[0];
+  const employees = arr[1];
+  const unused = arr[2];
+  const schoolInfo = arr[3];
 
   // console.log('children', children[0]);
   // console.log('employees', employees[0]);
   // console.log('unused', unused[0]);
   // console.log('schoolInfo', schoolInfo);
 
-  var employeesDic = _.groupBy(employees, SCHOOL_FIELD);
-  var childrenDic = _.groupBy(children, SCHOOL_FIELD);
+  const employeesDic = _.groupBy(employees, SCHOOL_FIELD);
+  const childrenDic = _.groupBy(children, SCHOOL_FIELD);
 
-  _.each(takeTargetSchoolOnly(_.keys(schoolInfo)), function (school) {
+  _.each(takeTargetSchoolOnly(_.keys(schoolInfo)), (school) => {
     outputCards(school, schoolInfo[school.toString()].full_name, employeesDic[school.toString()] || [],
       childrenDic[school.toString()] || []);
   });
@@ -51,7 +53,7 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
 function unusedTransform(info) {
   return {
     "school_name": "空白卡",
-      "card_list": _.map(info, function (card) {
+      "card_list": _.map(info, (card) => {
         return {
           "card_no": card[CARD_FIELD],
           "create_time": "2016-06-12 18:18:18"
@@ -60,10 +62,10 @@ function unusedTransform(info) {
   };
 }
 
-var outputCards = function (school, name, employees, children) {
+const outputCards = (school, name, employees, children) => {
 
   console.log('school cards starting: ' + school);
-  var content = {
+  const content = {
       "source_school_id": school.toString(),
       "school_name": name,
       "card_list": _.flatten([employeeCards(employees), childrenCards(children)])
@@ -74,7 +76,7 @@ var outputCards = function (school, name, employees, children) {
 };
 
 function employeeCards(employees) {
-  return _.map(employees, function (e) {
+  return _.map(employees, (e) => {
     return {
       "card_no": e.card,
       "status": "0",
@@ -87,7 +89,7 @@ function employeeCards(employees) {
 }
 
 function childrenCards(children) {
-  return _.map(children, function (c) {
+  return _.map(children, (c) => {
     return {
       "card_no": c.card,
       "status": "0",
