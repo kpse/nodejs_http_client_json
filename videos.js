@@ -1,29 +1,28 @@
-var _ = require('lodash');
-var Q = require('q');
-var csv = require('./src/parseCSV');
-var fs = require('fs');
+const _ = require('lodash');
+const Q = require('q');
+const csv = require('./src/parseCSV');
+const fs = require('fs');
 
-var env = '';
-// var env = 'stage2.';
+const env = '';
+// const env = 'stage2.';
 
-var mapCSV = csv.mapCSV;
+const mapCSV = csv.mapCSV;
 
 
-var promiseOfSessions = mapCSV('ref/e_session.' + env + 'csv');
+const promiseOfSessions = mapCSV('ref/e_session.' + env + 'csv');
 
-promiseOfSessions.then(function (sessions) {
-  var result = _(sessions).filter(function (nonVideo) {
-    return nonVideo.media_type == "video";
-  }).map(function (video) {
-    return video.media_url.split('  ');
-  }).flatten().uniq().value();
+promiseOfSessions.then((sessions) => {
+  const result = _(sessions)
+    .filter(nonVideo => nonVideo.media_type == "video")
+    .map(video => video.media_url.split('  '))
+    .flatten().uniq().value();
+
   console.log(sessions.length);
   console.log(result.length);
+
   // console.log(result);
-  var logStream = fs.createWriteStream('out/all_urls.txt', {'flags': 'a'});
-  _.each(result, function (line) {
-    logStream.write(line + '\n');
-  });
+  const logStream = fs.createWriteStream('out/all_urls.txt', {'flags': 'a'});
+  _.each(result, line => logStream.write(line + '\n'));
   logStream.end();
   console.log('write urls done.');
 });
