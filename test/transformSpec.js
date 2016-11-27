@@ -1,10 +1,10 @@
-var transform = require('../src/transform');
-var assert = require('chai').assert;
+const transform = require('../src/transform');
+const assert = require('chai').assert;
 
-describe('Transform', function () {
-  describe('to parent session', function () {
-    it('should accept sessions', function () {
-      var parents = transform.mapToParents([
+describe('Transform', () => {
+  describe('to parent session', () => {
+    it('should accept sessions', () => {
+      const parents = transform.mapToParents([
         {
           sender: 'parent_id',
           session_id: 'h_child_id',
@@ -18,8 +18,8 @@ describe('Transform', function () {
       assert.equal('child_id', parents[0].source_child_id);
     });
 
-    it('should consider media type', function () {
-      var parents = transform.mapToParents([
+    it('should consider media type', () => {
+      const parents = transform.mapToParents([
         {
           sender: 'parent_id',
           session_id: 'h_child_id',
@@ -32,9 +32,9 @@ describe('Transform', function () {
       assert.equal(1, parents.length);
       assert.equal('http://abc.com', parents[0].video_path);
     });
-    describe('to parents', function () {
-      it('should convert from relationship', function () {
-        var parents = transform.parents([
+    describe('to parents', () => {
+      it('should convert from relationship', () => {
+        const parents = transform.parents([
           {
             parent: {
               parent_id: 'parent_id',
@@ -52,8 +52,8 @@ describe('Transform', function () {
         assert.equal(1, parents.length);
         assert.equal('phone', parents[0].mobile);
       });
-      it('should remove duplicates', function () {
-        var parentInfo = {
+      it('should remove duplicates', () => {
+        const parentInfo = {
           parent: {
             parent_id: 'parent_id',
             phone: 'phone',
@@ -66,7 +66,7 @@ describe('Transform', function () {
           relationship: '爸爸',
           password: 'password',
         };
-        var sameParentWithDifferentChild = {
+        const sameParentWithDifferentChild = {
           parent: {
             parent_id: 'parent_id',
             phone: 'phone',
@@ -79,16 +79,16 @@ describe('Transform', function () {
           relationship: '爸爸',
           password: 'password',
         };
-        var parents = transform.parents([
+        const parents = transform.parents([
           parentInfo, sameParentWithDifferentChild
         ]);
         assert.equal(1, parents.length);
         assert.equal('phone', parents[0].mobile);
       });
     });
-    describe('to children', function () {
-      it('should convert from relationship', function () {
-        var children = transform.children([
+    describe('to children', () => {
+      it('should convert from relationship', () => {
+        const children = transform.children([
           {
             parent: {
               parent_id: 'parent_id',
@@ -107,8 +107,8 @@ describe('Transform', function () {
         assert.equal(1, children.length);
         assert.equal('child_id', children[0].source_child_id);
       });
-      it('should remove duplicates', function () {
-        var fatherInfo = {
+      it('should remove duplicates', () => {
+        const fatherInfo = {
           parent: {
             parent_id: 'parent_id',
             phone: 'phone',
@@ -122,7 +122,7 @@ describe('Transform', function () {
           relationship: '爸爸',
           password: 'password',
         };
-        var motherInfo = {
+        const motherInfo = {
           parent: {
             parent_id: 'parent_id2',
             phone: 'phone2',
@@ -136,7 +136,7 @@ describe('Transform', function () {
           relationship: '爸爸',
           password: 'password',
         };
-        var children = transform.children([
+        const children = transform.children([
           fatherInfo, motherInfo
         ]);
         assert.equal(1, children.length);
@@ -145,9 +145,9 @@ describe('Transform', function () {
     });
 
   });
-  describe('to employees', function () {
-    it('should accept single', function () {
-      var employees = transform.employees([
+  describe('to employees', () => {
+    it('should accept single', () => {
+      const employees = transform.employees([
         {
           id: 'employee_id',
           phone: 'phone',
@@ -162,8 +162,8 @@ describe('Transform', function () {
       assert.equal('phone', employees[0].mobile);
     });
 
-    it('should accept multiple', function () {
-      var employees = transform.employees([
+    it('should accept multiple', () => {
+      const employees = transform.employees([
         {
           id: 'employee_id',
           phone: 'phone',
@@ -188,11 +188,11 @@ describe('Transform', function () {
       assert.equal('phone2', employees[1].mobile);
     });
   });
-  describe('to class info', function () {
-    it('should handle empty input', function () {
+  describe('to class info', () => {
+    it('should handle empty input', () => {
       assert.deepEqual([], transform.classes([]));
     });
-    it('should transform class information', function () {
+    it('should transform class information', () => {
       assert.deepEqual([{
         "source_class_id": '123',
         "class_name": 'name',
@@ -200,7 +200,7 @@ describe('Transform', function () {
       }], transform.classes([{class_id: 123, name: 'name'}]));
     });
 
-    it('should transform multiple classes', function () {
+    it('should transform multiple classes', () => {
       assert.deepEqual([{
         "source_class_id": '123',
         "class_name": 'name',
