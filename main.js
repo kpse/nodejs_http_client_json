@@ -1,51 +1,49 @@
-var _ = require('lodash');
-var Q = require('q');
-var parseCSV = require('./src/parseCSV').parseCSV;
-// var parseCSVWithIndex = require('./src/parseCSV').parseCSVWithIndex;
-var accumulateCSV = require('./src/parseCSV').accumulateCSV;
-var address = require('./src/address');
-var transform = require('./src/transform');
-var display = require('./src/display');
-var file = require('./src/file');
-var filterNonExistingClass = require('./src/classesFunctions');
-var constants = require('./src/constants');
-var takeTargetSchoolOnly = require('./target_schools').filterSchool;
+const _ = require('lodash');
+const Q = require('q');
+const parseCSV = require('./src/parseCSV').parseCSV;
+// const parseCSVWithIndex = require('./src/parseCSV').parseCSVWithIndex;
+const accumulateCSV = require('./src/parseCSV').accumulateCSV;
+const address = require('./src/address');
+const transform = require('./src/transform');
+const display = require('./src/display');
+const file = require('./src/file');
+const filterNonExistingClass = require('./src/classesFunctions');
+const constants = require('./src/constants');
+const takeTargetSchoolOnly = require('./target_schools').filterSchool;
 console.log(process.env.username);
 console.log(process.env.password);
 
-var env = constants.env;
+const env = constants.env;
 
-var credential = {
+const credential = {
   account_name: process.env.username || 'username',
   password: process.env.password || 'password'
 };
 
-var Client = require('node-rest-client').Client;
+const Client = require('node-rest-client').Client;
 
-var client = new Client();
+const client = new Client();
 
-var args = {
+const args = {
   data: credential,
   headers: {"Content-Type": "application/json"}
 };
 
 function filterInternalSchools(schools) {
-  return _.reject(schools, function (school) {
-    var id = school.school_id;
-    return id < 2010 || _.some([2041, 2043, 2070], function (i) {
-        return i == id;
-      })
+  return _.reject(schools, school => {
+    const id = school.school_id;
+    return id < 2010 || _.some([2041, 2043, 2070], i => i == id)
   });
 }
 
-client.post(constants.loginUrl, args, function (data, response) {
+client.post(constants.loginUrl, args, (data, response) => {
 
-  var cookies = transferCookie(response);
-  client.get(constants.allSchools, cookies, function (all) {
-    var schools = all;
+  const cookies = transferCookie(response);
+  client.get(constants.allSchools, cookies, all => {
+    const schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    // var filtered = filterInternalSchools(schools);
-    var filtered = takeTargetSchoolOnly(schools);
+    // const filtered = filterInternalSchools(schools);
+    const filtered = takeTargetSchoolOnly(schools);
     console.log('filtered', filtered);
     // iterateSchools(10, filtered, cookies, outputSchool);
     iterateSchoolsForDynamic(filtered);
@@ -58,54 +56,50 @@ function iterateSchools(piece, schools, cookies, processFn) {
   if (schools.length == 0) {
     return console.log('all done');
   }
-  var tasks = _.map(_.take(schools, piece), function (s) {
+  const tasks = _.map(_.take(schools, piece), s => {
     console.log('s.school_id =', s.school_id);
     return processFn(s, cookies);
   });
 
-  Q.allSettled(tasks).then(function (results) {
-    var next = _.drop(schools, piece);
-    var one = _.first(next) || {};
+  Q.allSettled(tasks).then( results => {
+    const next = _.drop(schools, piece);
+    const one = _.first(next) || {};
     console.log('next to ', one.full_name, one.school_id);
     iterateSchools(piece, next, cookies, processFn);
-  }, function (err) {
-    console.log('iterate err', err);
-  }).done(function (err) {
-    console.log('finished one iteration..');
-  });
+  })
+  .catch(err => console.log('iterate err', err))
+  .done(err => console.log('finished one iteration..'));
 }
 
 function iterateSchoolsForDynamic(schools) {
 
-  var promiseOfParentSession = accumulateCSV('ref/p_session.' + env + 'csv', 'school_id');
+  const promiseOfParentSession = accumulateCSV('ref/p_session.' + env + 'csv', 'school_id');
 
-  var promiseOfEmployeeSession = accumulateCSV('ref/e_session.' + env + 'csv', 'school_id');
+  const promiseOfEmployeeSession = accumulateCSV('ref/e_session.' + env + 'csv', 'school_id');
 
-  var promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', 'school_id');
+  const promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', 'school_id');
 
-  Q.all([promiseOfParentSession, promiseOfEmployeeSession, promiseOfNews]).then(function (arr) {
-    var parentsDic = arr[0];
-    var employeesDic = arr[1];
-    var allNews = arr[2];
+  Q.all([promiseOfParentSession, promiseOfEmployeeSession, promiseOfNews]).then( arr => {
+    const parentsDic = arr[0];
+    const employeesDic = arr[1];
+    const allNews = arr[2];
     // console.log('parentsDic = ' + parentsDic);
     // console.log('employeesDic = ' + employeesDic);
     // console.log('allNews = ', allNews);
 
-    _.each(schools, function (school) {
+    _.each(schools, school => {
       outputHistory(school, employeesDic[school.school_id.toString()] || [],
         parentsDic[school.school_id.toString()] || [],
         allNews[school.school_id.toString()] || []);
     });
 
-  }, function (err) {
-    console.log('school dynamic retrieve err', err);
-  });
+  }).catch(err => console.log('school dynamic retrieve err', err));
 
 }
 
 
-var outputSchool = function (school, cookie) {
-  var writeTask = Q.defer();
+const outputSchool = (school, cookie) => {
+  const writeTask = Q.defer();
 
   if (file.isExisting(school.full_name)) {
     console.log('skipping, school is existing: ' + school.school_id);
@@ -114,9 +108,9 @@ var outputSchool = function (school, cookie) {
   }
 
   console.log('school starting: ' + school.school_id);
-  var s = school;
+  const s = school;
   // console.log("school: ", s);
-  var content = {
+  const content = {
     "school_info": {
       "source_id": s.school_id.toString(),
       "school_name": s.full_name,
@@ -131,58 +125,50 @@ var outputSchool = function (school, cookie) {
     }
   };
 
-  var employeesDefer = Q.defer();
-  client.get(constants.employeeUrl(school), cookie, function (all) {
-    employeesDefer.resolve(all);
-  });
-  var promiseOfEmployees = employeesDefer.promise;
+  const employeesDefer = Q.defer();
+  client.get(constants.employeeUrl(school), cookie, all => employeesDefer.resolve(all));
+  const promiseOfEmployees = employeesDefer.promise;
 
-  var relationshipsDefer = Q.defer();
-  client.get(constants.relationshipUrl(school), cookie, function (all) {
-    relationshipsDefer.resolve(all);
-  });
-  var promiseOfRelationships = relationshipsDefer.promise;
+  const relationshipsDefer = Q.defer();
+  client.get(constants.relationshipUrl(school), cookie, all => relationshipsDefer.resolve(all));
+  const promiseOfRelationships = relationshipsDefer.promise;
 
-  var classDefer = Q.defer();
-  client.get(constants.classUrl(school), cookie, function (all) {
-    classDefer.resolve(all);
-  });
-  var promiseOfClasses = classDefer.promise;
+  const classDefer = Q.defer();
+  client.get(constants.classUrl(school), cookie, all => classDefer.resolve(all));
+  const promiseOfClasses = classDefer.promise;
 
 
-  var promiseOfParentPass = parseCSV('ref/p_pass.' + env + 'csv', 'phone');
+  const promiseOfParentPass = parseCSV('ref/p_pass.' + env + 'csv', 'phone');
 
-  var promiseOfEmployeePass = parseCSV('ref/e_pass.' + env + 'csv', 'phone');
+  const promiseOfEmployeePass = parseCSV('ref/e_pass.' + env + 'csv', 'phone');
 
-  var promiseOfEmployeeClass = accumulateCSV('ref/e_class.' + env + 'csv', 'employee_id');
+  const promiseOfEmployeeClass = accumulateCSV('ref/e_class.' + env + 'csv', 'employee_id');
 
   Q.all([promiseOfEmployees, promiseOfRelationships,
-    promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass, promiseOfEmployeeClass]).then(function (arr) {
-    var employees = arr[0];
-    var relationships = arr[1];
-    var classes = arr[2];
-    var pPass = arr[3];
-    var ePass = arr[4];
-    var eClass = arr[5];
+    promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass, promiseOfEmployeeClass]).then( arr => {
+    const employees = arr[0];
+    const relationships = arr[1];
+    const classes = arr[2];
+    const pPass = arr[3];
+    const ePass = arr[4];
+    const eClass = arr[5];
     // console.log(pPass);
     // console.log(ePass);
     //  console.log(eClass);
-    var allClassIds = _.map(classes, function(cls) {
-      return cls.class_id;
-    });
+    const allClassIds = _.map(classes, cls => cls.class_id);
 
-    var relationshipsWithPassword = _.map(relationships, function (r) {
+    const relationshipsWithPassword = _.map(relationships, function (r) {
       // console.log(r.parent.phone, pPass[r.parent.phone]);
-      var content = pPass[r.parent.phone] || {password: ''};
+      const content = pPass[r.parent.phone] || {password: ''};
       r.password = content.password;
-      if(!_.some(allClassIds, function (i) {return r.child.class_id == i;})) {
+      if(!_.some(allClassIds, i => r.child.class_id == i)) {
         console.log('class is not existing!', r, r.child.class_id, allClassIds);
       }
       return r;
     });
-    var employeesWithPassword = _.map(employees, function (e) {
-      var guard = ePass[e.phone] || {login_password: ''};
-      var guardSubordinate = eClass[e.id] || [{subordinate: ''}];
+    const employeesWithPassword = _.map(employees, e => {
+      const guard = ePass[e.phone] || {login_password: ''};
+      const guardSubordinate = eClass[e.id] || [{subordinate: ''}];
       // console.log(guard);
       // console.log(guard.subordinate);
       e.password = guard.login_password || 'No password!';
@@ -201,13 +187,11 @@ var outputSchool = function (school, cookie) {
     file.write(school.full_name, content);
     console.log('school done: ' + school.school_id);
     writeTask.resolve();
-  }, function (err) {
-    console.log('school retrieve err', err);
-  });
+  }).catch(err => console.log('school retrieve err', err));
   return writeTask.promise;
 };
 
-var outputHistory = function (school, employeesDic, parentsDic, newsDic) {
+const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
 
   if (file.isExisting('dynamic-' + school.school_id + '-' + school.full_name)) {
     console.log('skipping, school is existing: ' + school.school_id);
@@ -215,8 +199,8 @@ var outputHistory = function (school, employeesDic, parentsDic, newsDic) {
   }
 
   console.log('school starting history: ' + school.school_id);
-  var s = school;
-  var content = {
+  const s = school;
+  const content = {
     "school_info": {
       "source_id": s.school_id.toString(),
       "school_name": s.full_name,
