@@ -1,6 +1,6 @@
 'use strict';
 
-exports.relationshipTranslate = relationshipName => {
+module.exports = relationshipName => {
   //与孩子的关系，4-爸爸,5-妈妈,6-爷爷,7-姥姥,8-亲属,10-姥爷,11-奶奶
   if (relationshipName == '爸爸') {
     return '4';
