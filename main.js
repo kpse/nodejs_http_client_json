@@ -1,3 +1,5 @@
+'use strict';
+
 const _ = require('lodash');
 const Q = require('q');
 const parseCSV = require('./src/parseCSV').parseCSV;
@@ -10,6 +12,7 @@ const file = require('./src/file');
 const filterNonExistingClass = require('./src/classesFunctions');
 const constants = require('./src/constants');
 const takeTargetSchoolOnly = require('./target_schools').filterSchool;
+const transferCookie = require('./trasfer_cookie');
 console.log(process.env.username);
 console.log(process.env.password);
 
@@ -218,9 +221,3 @@ const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
   file.dynamicOutput(school.school_id + '-' + school.full_name, content);
   console.log('school dynamic done: ' + school.school_id);
 };
-
-//private
-
-function transferCookie(res) {
-  return {headers: {cookie: res.headers['set-cookie'], "Content-Type": "application/json"}}
-}

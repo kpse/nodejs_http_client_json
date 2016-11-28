@@ -1,3 +1,5 @@
+'use strict';
+
 const _ = require('lodash');
 const Q = require('q');
 const csv = require('./src/parseCSV');

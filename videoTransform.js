@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 const csv = require('csv-parser');
 const address = require('./src/address');
