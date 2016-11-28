@@ -15,3 +15,7 @@
 ## test
 
 - npm test
+
+### TODO: considering fast-csv
+
+- https://www.npmjs.com/package/fast-csv
