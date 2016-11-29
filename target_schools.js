@@ -20,9 +20,14 @@ function filterSchoolId(ids) {
   return _.intersection(ids, _.map(allIds, o => o + ''));
 }
 
+function idRangesInSql() {
+  return "'" + _.join(allIds, "', '") + "'";
+}
+
 console.log('target school count:', allIds.length);
 
 module.exports = {
-  filterSchool: filterSchool,
-  filterSchoolId: filterSchoolId
+  filterSchool,
+  filterSchoolId,
+  idRangesInSql
 };
