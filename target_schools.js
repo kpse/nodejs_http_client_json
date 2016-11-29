@@ -7,14 +7,17 @@ const _ = require('lodash');
 // xian 1
 // const allIds = [3765, 3752, 2376, 3155, 2302, 2980, 2991, 2625, 3001, 2325, 3008, 4389, 2926, 2925, 2815, 2171, 2877, 2183, 4402, 2301]
 // xian 2
-const allIds = [2928, 2624, 2936, 2332, 2177, 2530, 2331, 2516, 2324, 5208, 2186, 2993, 2962, 2295, 2318, 2612, 2191, 4038, 2825, 2901];
+// const allIds = [2928, 2624, 2936, 2332, 2177, 2530, 2331, 2516, 2324, 5208, 2186, 2993, 2962, 2295, 2318, 2612, 2191, 4038, 2825, 2901];
+// xian 3
+const allIds = [2599, 2610, 2956, 3505, 2327, 2317, 2685, 2743, 2513, 2932, 2964, 3726, 2892, 2190, 2181, 2298, 2314, 2407, 2830, 2573, 2766];
+
 
 function filterSchool(schools) {
-  return _.filter(schools, (school) => _.some(allIds, (i) => i == school.school_id));
+  return _.filter(schools, school => _.some(allIds, i => i == school.school_id));
 };
 
 function filterSchoolId(ids) {
-  return _.intersection(ids, _.map(allIds, (o) => o + ''));
+  return _.intersection(ids, _.map(allIds, o => o + ''));
 }
 
 console.log('target school count:', allIds.length);

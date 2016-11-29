@@ -6,3 +6,4 @@ out-dynamic/
 *.zip
 result/
 old_out/
+.DS_Store

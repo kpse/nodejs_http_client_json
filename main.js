@@ -12,7 +12,7 @@ const file = require('./src/file');
 const filterNonExistingClass = require('./src/classesFunctions');
 const constants = require('./src/constants');
 const takeTargetSchoolOnly = require('./target_schools').filterSchool;
-const transferCookie = require('./trasfer_cookie');
+const transferCookie = require('./src/transfer_cookie');
 console.log(process.env.username);
 console.log(process.env.password);
 
@@ -190,7 +190,7 @@ const outputSchool = (school, cookie) => {
     file.write(school.full_name, content);
     console.log('school done: ' + school.school_id);
     writeTask.resolve();
-  }).catch(err => console.log('school retrieve err', err));
+  }).catch(err => console.log(`school ${school.school_id} retrieve err`, err));
   return writeTask.promise;
 };
 

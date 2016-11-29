@@ -1,8 +1,10 @@
 'use strict';
 
-exports.transferCookie = (res) => {
+module.exports = (res) => {
+  return {
     headers: {
-        cookie: res.headers['set-cookie'],
-        "Content-Type": "application/json"
+      cookie: res.headers['set-cookie'],
+      'Content-Type': 'application/json'
     }
+  }
 }
