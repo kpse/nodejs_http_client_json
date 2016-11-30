@@ -9,7 +9,8 @@ SELECT c.uid, \n\
   INNER JOIN \`cardrecord\` cd on c.\`card\`= cd.\`origin\` \n\
 where e.\`status\`= 1 \n\
    and c.\`school_id\` in (${range}) \n\
-   and c.\`status\`= 1`;
+   and c.\`status\`= 1
+`
 
 const childrenCard = (range) => `
 SELECT e.uid,
@@ -34,7 +35,8 @@ where e.\`status\`= 1
    and e.\`child_id\` in (
 select child_id
   from \`childinfo\`
-where school_id in (${range}))`;
+where school_id in (${range}))
+`
 
 const eClass = range => `
 SELECT e.uid, e.\`school_id\`,
@@ -50,7 +52,8 @@ LIMIT 1) end as subordinate,
    and p.\`status\`= 1
    and \`group\`<> 'operator'
 where e.\`school_id\` in (${range})
-   and e.\`status\`= 1`; 
+   and e.\`status\`= 1
+`
 
 const pSession = range => `
 select uid,
@@ -64,7 +67,8 @@ select uid,
   from \`sessionlog\`
 where \`status\`= 1
    and \`sender_type\`= 'p' and \`session_id\` LIKE 'h_%'
-and \`school_id\` in (${range})`
+and \`school_id\` in (${range})
+`
 
 const eSession = range => `
 select uid,
@@ -78,7 +82,8 @@ select uid,
   from \`sessionlog\`
 where \`status\`= 1
    and \`sender_type\`= 't' and \`session_id\` LIKE 'h_%'
-and \`school_id\` in (${range})`
+and \`school_id\` in (${range})
+`
 
 const ePass = range => `
 SELECT uid,
@@ -90,7 +95,8 @@ SELECT uid,
        login_password
   FROM \`employeeinfo\`
 WHERE status= 1
-   and \`school_id\` in (${range})`
+   and \`school_id\` in (${range})
+`
 
 const pPass = range => `
 SELECT a.uid, phone,

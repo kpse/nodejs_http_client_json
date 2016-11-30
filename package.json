@@ -17,7 +17,8 @@
   },
   "scripts": {
     "start": "node main.js",
-    "test": "mocha"
+    "test": "mocha",
+    "prep": "node sql.js"
   },
   "author": "",
   "license": "ISC"
