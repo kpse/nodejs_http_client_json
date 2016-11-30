@@ -1,82 +1,5 @@
-var template = {
-  "school_info": {
-    "source_id": "",
-    "school_name": "",
-    "school_description": "",
-    "province": "",
-    "city": "",
-    "area": "",
-    "detailed_address": "",
-    "school_linkphone": "",
-
-    "master_info": {
-      "source_master_id": "",
-      "mobile": "",
-      "name": "",
-      "password": "",
-      "introduction": ""
-    },
-
-    "class_list": [{
-      "source_class_id": "",
-      "class_name": "",
-      "is_graduation": "0"
-    }],
-
-    "child_list": [{
-      "source_child_id": "",
-      "name": "",
-      "source_class_id": "",
-      "birthday": "yyyy-MM-dd 00:00:00",
-      "sex": "", //0-未知，1-男，2-女
-      "is_graduation": "", //0-否，1-是
-      "is_in_school": "" //0-否，1-是
-    }],
-
-    "teacher_list": [{
-      "source_teacher_id": "",
-      "mobile": "",
-      "name": "",
-      "password": "",
-      "birthday": "",
-      "sex": "", //0-未知，1-男，2-女
-      "source_class_id": ""
-    }],
-
-    "parent_list": [{
-      "source_parent_id": "",
-      "mobile": "",
-      "name": "",
-      "password": "",
-      "source_child_id": "",
-      "relation_type": ""//与孩子的关系，4-爸爸,5-妈妈,6-爷爷,7-姥姥,8-亲属,10-姥爷,11-奶奶
-    }]
-  }
-};
-
-var cardinfo = {
-  "card_info": {
-    "school_id": "",
-    "school_name": "",
-    "card_list": [
-      {
-        "card_no": "",
-        "mac_id": "",
-        "status": "",
-        "type": "",
-        "person_id": "",
-        "person_name": "",
-        "class_id": "",
-        "class_name": "",
-        "create_time": "",
-        "origin": "youlebao"
-      },
-      {}
-    ]
-  }
-};
-
-const employeeCard = (range) => `SELECT c.uid, \n\
+const employeeCard = (range) => `
+SELECT c.uid, \n\
        e.\`school_id\`, \n\
        e.employee_id, \n\
        name, \n\
@@ -88,7 +11,8 @@ where e.\`status\`= 1 \n\
    and c.\`school_id\` in (${range}) \n\
    and c.\`status\`= 1`;
 
-const childrenCard = (range) => `SELECT e.uid,
+const childrenCard = (range) => `
+SELECT e.uid,
        e.\`school_id\`,
        e.\`child_id\`,
        e.\`name\`,
@@ -112,6 +36,94 @@ select child_id
   from \`childinfo\`
 where school_id in (${range}))`;
 
+const eClass = range => `
+SELECT e.uid, e.\`school_id\`,
+       e.\`employee_id\`,
+       case p.\`group\` WHEN 'teacher' THEN \`subordinate\` else(
+select class_id
+  from \`classinfo\`
+WHERE \`school_id\`= e.\`school_id\`
+LIMIT 1) end as subordinate,
+       p.\`group\`
+  FROM \`prod\`.\`employeeinfo\` e
+  left OUTER JOIN \`privilege\` p on e.\`employee_id\`= p.\`employee_id\`
+   and p.\`status\`= 1
+   and \`group\`<> 'operator'
+where e.\`school_id\` in (${range})
+   and e.\`status\`= 1`; 
+
+const pSession = range => `
+select uid,
+       school_id,
+       \`session_id\`,
+       \`content\`,
+       \`media_url\`,
+       \`media_type\`,
+       sender,
+       \`update_at\`
+  from \`sessionlog\`
+where \`status\`= 1
+   and \`sender_type\`= 'p' and \`session_id\` LIKE 'h_%'
+and \`school_id\` in (${range})`
+
+const eSession = range => `
+select uid,
+       school_id,
+       \`session_id\`,
+       \`content\`,
+       \`media_url\`,
+       \`media_type\`,
+       sender,
+       \`update_at\`
+  from \`sessionlog\`
+where \`status\`= 1
+   and \`sender_type\`= 't' and \`session_id\` LIKE 'h_%'
+and \`school_id\` in (${range})`
+
+const ePass = range => `
+SELECT uid,
+       school_id,
+       employee_id,
+       gender,
+       picurl,
+       phone,
+       login_password
+  FROM \`employeeinfo\`
+WHERE status= 1
+   and \`school_id\` in (${range})`
+
+const pPass = range => `
+SELECT a.uid, phone,
+       password
+  from \`accountinfo\` a
+  INNER JOIN \`parentinfo\` on \`phone\`= accountid
+WHERE status= 1
+   and \`school_id\` in (${range})
+`
+
+const schoolInfo = range => `
+SELECT uid,
+       school_id,
+       full_name
+  FROM \`schoolinfo\`
+WHERE status= 1
+   and \`school_id\` in (${range})
+`
+
+const news = range => `
+SELECT uid,
+       \`school_id\`,
+       \`class_id\`,
+        replace(to_base64(content), '\n', '') \`content\`,
+       \`image\`,
+       \`update_at\`,
+       \`publisher_id\`
+  FROM \`location\`.\`news\`
+ wHERE \`published\`= 1
+   and \`status\`= 1
+   and \`school_id\` in (${range})
+`
+
 module.exports = {
-  employeeCard, childrenCard
+  employeeCard, childrenCard, eClass, pSession, eSession, ePass, pPass, schoolInfo, news
 }
