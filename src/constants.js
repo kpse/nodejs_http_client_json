@@ -1,29 +1,20 @@
-var env = '';
+'use strict';
+
+const env = '';
 // var env = 'stage2.';
 
-
-var host = "https://" + env + "cocobabys.com";
-var loginUrl = host + "/employee_login.do";
-var allSchools = host + "/kindergarten";
-
-var classUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/class';
-};
-
-var employeeUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/employee?most=5000';
-};
-
-var relationshipUrl = function (school) {
-  return host + "/kindergarten/" + school.school_id + '/relationship';
-};
-
+const host = `https://${env}cocobabys.com`
+const loginUrl = `${host}/employee_login.do`
+const allSchools = `${host}/kindergarten`
+const classUrl = school => `${host}/kindergarten/${school.school_id}/class`
+const employeeUrl = school => `${host}/kindergarten/${school.school_id}/employee?most=5000`
+const relationshipUrl = school => `${host}/kindergarten/${school.school_id}/relationship`
 
 module.exports = {
-  classUrl: classUrl,
-  employeeUrl: employeeUrl,
-  relationshipUrl: relationshipUrl,
-  loginUrl: loginUrl,
-  allSchools: allSchools,
-  env: env
+  classUrl,
+  employeeUrl,
+  relationshipUrl,
+  loginUrl,
+  allSchools,
+  env
 }
