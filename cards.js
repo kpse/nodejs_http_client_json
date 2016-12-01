@@ -4,11 +4,11 @@ const _ = require('lodash');
 const Q = require('q');
 const csv = require('./src/parseCSV');
 const file = require('./src/file');
+const constants = require('./src/constants');
 
 const takeTargetSchoolOnly = require('./target_schools').filterSchoolId;
 
-const env = '';
-// const env = 'stage2.';
+const env = constants.env;
 
 const mapCSV = csv.mapCSV;
 const parseCSV = csv.parseCSV;
