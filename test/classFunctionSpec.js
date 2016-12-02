@@ -14,5 +14,9 @@ describe('Class functions', () => {
     it('should handle all empty case', () => {
       assert.deepEqual([], classesFunction([], []));
     });
+
+    it('should report empty class if the employee manages nothing', () => {
+      assert.deepEqual([], classesFunction([1], []));
+    });
   });
 });

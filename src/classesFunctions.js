@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 
-function filterNonExistingClass(allClasses, subordinate, employee) {
+module.exports = (allClasses, subordinate, employee) => {
   // console.log('allClasses', allClasses);
   // console.log('subordinate', subordinate);
   const ret = _.filter(subordinate, c => _.some(allClasses, target => c.toString() == target));
@@ -13,5 +13,3 @@ function filterNonExistingClass(allClasses, subordinate, employee) {
 
   return ret;
 }
-
-module.exports = filterNonExistingClass;
