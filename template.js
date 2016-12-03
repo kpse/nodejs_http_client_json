@@ -56,6 +56,7 @@ where e.\`school_id\` in (${range})
 `
 
 const pSession = range => `
+create table p_session 
 select uid,
        school_id,
        \`session_id\`,
@@ -71,6 +72,7 @@ and \`school_id\` in (${range})
 `
 
 const eSession = range => `
+create table e_session 
 select uid,
        school_id,
        \`session_id\`,
