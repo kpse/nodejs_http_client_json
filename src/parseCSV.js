@@ -1,73 +1,53 @@
-var Q = require('q');
-var fs = require('fs');
-var csv = require('csv-parser');
+const Q = require('q');
+const fs = require('fs');
+const csv = require('csv-parser');
 
 function parseCSV(fileName, fieldName) {
-  var fieldName = fieldName || 'sender';
-  var fileName = fileName;
-  var deferred = Q.defer();
-  var dic = {};
+  const file = fieldName || 'sender';
+  const deferred = Q.defer();
+  const dic = {};
   fs.createReadStream(fileName)
     .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      dic[data[fieldName]] = data
-    }).on('end', function () {
-    deferred.resolve(dic);
-  });
+    .on('data', data => dic[data[file]] = data)
+    .on('end', () => deferred.resolve(dic));
   return deferred.promise;
 }
 
 function parseCSVWithIndex(fileName, index) {
-  var fieldIndex = index || 0;
-  var fileName = fileName;
-  var deferred = Q.defer();
-  var dic = {};
-  fs.createReadStream(fileName)
+  const file = fileName;
+  const deferred = Q.defer();
+  const dic = {};
+  fs.createReadStream(file)
     .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      dic[data[data.headers[index]]] = data
-    }).on('end', function () {
-    deferred.resolve(dic);
-  });
+    .on('data', data => dic[data[data.headers[index]]] = data)
+    .on('end', () => deferred.resolve(dic));
   return deferred.promise;
 }
 
 function mapCSV(fileName) {
-  var deferred = Q.defer();
-  var result = [];
+  const deferred = Q.defer();
+  const result = [];
   fs.createReadStream(fileName)
     .pipe(csv())
-    .on('data', function (data) {
-      // console.log(data);
-      result.push(data);
-    }).on('end', function () {
-    deferred.resolve(result);
-  });
+    .on('data', data => result.push(data))
+    .on('end', () => deferred.resolve(result));
   return deferred.promise;
 }
 
 function accumulateCSV(fileName, fieldName) {
-  var fieldName = fieldName || 'sender';
-  var fileName = fileName;
-  var deferred = Q.defer();
-  var dic = {};
+  const file = fieldName || 'sender';
+  const deferred = Q.defer();
+  const dic = {};
   fs.createReadStream(fileName)
     .pipe(csv())
-    .on('data', function (data) {
-      var existing = dic[data[fieldName]] || [];
+    .on('data', data => {
+      var existing = dic[data[file]] || [];
       existing.push(data);
-      dic[data[fieldName]] = existing;
-    }).on('end', function () {
-    deferred.resolve(dic);
-  });
+      dic[data[file]] = existing;
+    }).on('end', () => deferred.resolve(dic));
   return deferred.promise;
 }
 
 module.exports = {
-  parseCSV: parseCSV,
-  mapCSV: mapCSV,
-  parseCSVWithIndex: parseCSVWithIndex,
-  accumulateCSV: accumulateCSV
+  parseCSV, mapCSV, parseCSVWithIndex, accumulateCSV
 }

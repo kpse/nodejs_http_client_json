@@ -39,7 +39,7 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
   const employeesDic = _.groupBy(employees, SCHOOL_FIELD);
   const childrenDic = _.groupBy(children, SCHOOL_FIELD);
 
-  _.each(takeTargetSchoolOnly(_.keys(schoolInfo)), (school) => {
+  _.each(takeTargetSchoolOnly(_.keys(schoolInfo)), school => {
     outputCards(school, schoolInfo[school.toString()].full_name, employeesDic[school.toString()] || [],
       childrenDic[school.toString()] || []);
   });
