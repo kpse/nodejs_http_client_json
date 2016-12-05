@@ -3,7 +3,6 @@
 const _ = require('lodash');
 const Q = require('q');
 const parseCSV = require('./src/parseCSV').parseCSV;
-// const parseCSVWithIndex = require('./src/parseCSV').parseCSVWithIndex;
 const accumulateCSV = require('./src/parseCSV').accumulateCSV;
 const address = require('./src/address');
 const transform = require('./src/transform');
@@ -32,23 +31,15 @@ const args = {
   headers: {"Content-Type": "application/json"}
 };
 
-function filterInternalSchools(schools) {
-  return _.reject(schools, school => {
-    const id = school.school_id;
-    return id < 2010 || _.some([2041, 2043, 2070], i => i == id)
-  });
-}
-
 client.post(constants.loginUrl, args, (data, response) => {
 
   const cookies = transferCookie(response);
   client.get(constants.allSchools, cookies, all => {
     const schools = all;
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
-    // const filtered = filterInternalSchools(schools);
     const filtered = takeTargetSchoolOnly(schools);
     console.log('filtered', filtered);
-    // iterateSchools(10, filtered, cookies, outputSchool);
+    iterateSchools(10, filtered, cookies, outputSchool);
     iterateSchoolsForDynamic(filtered);
   })
 });

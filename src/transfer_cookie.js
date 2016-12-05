@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = (res) => {
+module.exports = res => {
   return {
     headers: {
       cookie: res.headers['set-cookie'],
