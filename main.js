@@ -39,7 +39,7 @@ client.post(constants.loginUrl, args, (data, response) => {
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
     const filtered = takeTargetSchoolOnly(schools);
     console.log('filtered', filtered);
-    iterateSchools(10, filtered, cookies, outputSchool);
+    // iterateSchools(10, filtered, cookies, outputSchool);
     iterateSchoolsForDynamic(filtered);
   })
 });
@@ -187,17 +187,17 @@ const outputSchool = (school, cookie) => {
 
 const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
 
-  if (file.isExisting('dynamic-' + school.school_id + '-' + school.full_name)) {
-    console.log('skipping, school is existing: ' + school.school_id);
+  let schoolId = school.school_id;
+  if (file.isExisting('dynamic-' + schoolId + '-' + school.full_name)) {
+    console.log('skipping, school is existing: ' + schoolId);
     return;
   }
 
-  console.log('school starting history: ' + school.school_id);
-  const s = school;
+  console.log('school starting history: ' + schoolId);
   const content = {
     "school_info": {
-      "source_id": s.school_id.toString(),
-      "school_name": s.full_name,
+      "source_id": schoolId.toString(),
+      "school_name": school.full_name,
       "dynamic_list_teacher": [],
       "dynamic_list_parent": [],
       "notify_list_class": []
@@ -209,6 +209,6 @@ const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
   content['school_info']['notify_list_class'] = transform.mapToNews(newsDic);
 
 
-  file.dynamicOutput(school.school_id + '-' + school.full_name, content);
-  console.log('school dynamic done: ' + school.school_id);
+  file.dynamicOutput(schoolId + '-' + school.full_name, content);
+  console.log('school dynamic done: ' + schoolId);
 };
