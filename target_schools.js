@@ -17,7 +17,9 @@ const _ = require('lodash');
 // xian 6
 // const allIds = [2830, 2573, 2766, 2937, 2309, 2874, 2941, 2952, 2192, 2914, 2391, 2378, 2897, 2396, 2740, 3090, 2184, 2719, 2960, 3038, 2196];
 // xian 6.1
-const allIds = [2196, 2830, 2766];
+// const allIds = [2196, 2830, 2766];
+// xian 7
+const allIds = [2955, 2524, 2621, 2994, 4403, 3024];
 
 
 function filterSchool(schools) {
