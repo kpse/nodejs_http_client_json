@@ -18,6 +18,7 @@ describe('Address', () => {
     describe('areaOf()', () => {
       it('should return area of given address string', () => {
         assert.equal('', address.areaOf('四川省成都市'));
+        assert.equal('', address.areaOf('四川省武侯区'));
         assert.equal('龙岗区', address.areaOf('广东省深圳市龙岗区'));
       });
     });

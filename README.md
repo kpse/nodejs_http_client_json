@@ -1,4 +1,4 @@
-# nodejs_http_client_json
+# Exporting information from prod/stage environment
 
 ### main.js
 
