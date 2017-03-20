@@ -39,7 +39,7 @@ client.post(constants.loginUrl, args, (data, response) => {
     console.log('schools.length = ', schools.length, _.map(schools, 'school_id'));
     const filtered = takeTargetSchoolOnly(schools);
     console.log('filtered', filtered);
-    // iterateSchools(10, filtered, cookies, outputSchool);
+    iterateSchools(10, filtered, cookies, outputSchool);
     iterateSchoolsForDynamic(filtered);
   })
 });
