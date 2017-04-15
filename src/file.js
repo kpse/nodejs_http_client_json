@@ -4,21 +4,21 @@ const jsonfile = require('jsonfile');
 const fs = require('fs');
 
 
-function writeToFile(filename, obj) {
+function write(filename, obj) {
   const file = './out/' + filename + '.json';
   jsonfile.writeFile(file, obj, function (err) {
     if (err) console.error('err', err);
   });
 }
 
-function dynamicInfoOutput(filename, obj) {
+function dynamicOutput(filename, obj) {
   const file = './out-dynamic/dynamic-' + filename + '.json';
   jsonfile.writeFile(file, obj, function (err) {
     if (err) console.error('err', err);
   });
 }
 
-const isFileExisting = function (name) {
+const isExisting = function (name) {
   try {
     fs.accessSync('./out/' + name + '.json', fs.F_OK);
     return true;
@@ -30,7 +30,7 @@ const isFileExisting = function (name) {
 
 
 module.exports = {
-  write: writeToFile,
-  isExisting: isFileExisting,
-  dynamicOutput: dynamicInfoOutput
+  write,
+  isExisting,
+  dynamicOutput
 }
