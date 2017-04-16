@@ -53,12 +53,10 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
 function unusedTransform(info) {
   return {
     "school_name": "空白卡",
-      "card_list": _.map(info, (card) => {
-        return {
-          "card_no": card[CARD_FIELD],
-          "create_time": "2016-06-12 18:18:18"
-        }
-      })
+      "card_list": _.map(info, card => ({
+        "card_no": card[CARD_FIELD],
+        "create_time": "2016-06-12 18:18:18"
+      }))
   };
 }
 
@@ -76,21 +74,18 @@ const outputCards = (school, name, employees, children) => {
 };
 
 function employeeCards(employees) {
-  return _.map(employees, (e) => {
-    return {
-      "card_no": e.card,
-      "status": "0",
-      "type": "0",
-      "source_person_id": e.employee_id,
-      "person_name": e.name,
-      "create_time": "2016-06-12 18:18:18"
-    };
-  })
+  return _.map(employees, e => ({
+    "card_no": e.card,
+    "status": "0",
+    "type": "0",
+    "source_person_id": e.employee_id,
+    "person_name": e.name,
+    "create_time": "2016-06-12 18:18:18"
+  }))
 }
 
 function childrenCards(children) {
-  return _.map(children, (c) => {
-    return {
+  return _.map(children, c => ({
       "card_no": c.card,
       "status": "0",
       "type": "1",
@@ -99,6 +94,5 @@ function childrenCards(children) {
       "source_class_id": c.class_id,
       "class_name": c.class_name,
       "create_time": "2016-06-12 18:18:18"
-    };
-  });
+    }));
 }

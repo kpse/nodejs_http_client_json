@@ -1,3 +1,5 @@
+'use strict';
+
 const address = require('../src/address');
 const assert = require('chai').assert;
 

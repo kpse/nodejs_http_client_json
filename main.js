@@ -155,7 +155,7 @@ const outputSchool = (school, cookie) => {
       // console.log(r.parent.phone, pPass[r.parent.phone]);
       const content = pPass[r.parent.phone] || {password: ''};
       r.password = content.password;
-      if(!_.some(allClassIds, i => r.child.class_id == i)) {
+      if(!_.some(allClassIds, i => r.child.class_id === i)) {
         console.log('class is not existing!', r, r.child.class_id, allClassIds);
       }
       return r;

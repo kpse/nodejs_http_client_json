@@ -1,3 +1,5 @@
+'use strict';
+
 const display = require('../src/display');
 const assert = require('chai').assert;
 

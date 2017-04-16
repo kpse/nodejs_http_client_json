@@ -1,3 +1,5 @@
+'use strict';
+
 const relationship = require('../src/relationship');
 const assert = require('chai').assert;
 

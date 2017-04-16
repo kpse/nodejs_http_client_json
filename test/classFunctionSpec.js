@@ -1,3 +1,5 @@
+'use strict';
+
 const classesFunction = require('../src/classesFunctions');
 const assert = require('chai').assert;
 

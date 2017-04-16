@@ -1,3 +1,5 @@
+'use strict';
+
 const transform = require('../src/transform');
 const assert = require('chai').assert;
 
