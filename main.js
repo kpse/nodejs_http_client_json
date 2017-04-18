@@ -47,7 +47,7 @@ client.post(constants.loginUrl, args, (data, response) => {
 //core functions
 
 function iterateSchools(piece, schools, cookies, processFn) {
-  if (schools.length == 0) {
+  if (schools.length === 0) {
     return console.log('all done');
   }
   const tasks = _.map(_.take(schools, piece), s => {
@@ -120,15 +120,15 @@ const outputSchool = (school, cookie) => {
   };
 
   const employeesDefer = Q.defer();
-  client.get(constants.employeeUrl(school), cookie, all => employeesDefer.resolve(all));
+  client.get(constants.employeeUrl(school), cookie, employeesDefer.resolve);
   const promiseOfEmployees = employeesDefer.promise;
 
   const relationshipsDefer = Q.defer();
-  client.get(constants.relationshipUrl(school), cookie, all => relationshipsDefer.resolve(all));
+  client.get(constants.relationshipUrl(school), cookie, relationshipsDefer.resolve);
   const promiseOfRelationships = relationshipsDefer.promise;
 
   const classDefer = Q.defer();
-  client.get(constants.classUrl(school), cookie, all => classDefer.resolve(all));
+  client.get(constants.classUrl(school), cookie, classDefer.resolve);
   const promiseOfClasses = classDefer.promise;
 
 

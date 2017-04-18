@@ -15,7 +15,7 @@ const promiseOfSessions = mapCSV('ref/e_session.' + env + 'csv');
 
 promiseOfSessions.then((sessions) => {
   const result = _(sessions)
-    .filter(nonVideo => nonVideo.media_type == "video")
+    .filter(nonVideo => nonVideo.media_type === "video")
     .map(video => video.media_url.split('  '))
     .flatten().uniq().value();
 
