@@ -33,4 +33,4 @@ module.exports = {
   write,
   isExisting,
   dynamicOutput
-}
+};

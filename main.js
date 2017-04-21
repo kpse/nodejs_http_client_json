@@ -48,7 +48,8 @@ client.post(constants.loginUrl, args, (data, response) => {
 
 function iterateSchools(piece, schools, cookies, processFn) {
   if (schools.length === 0) {
-    return console.log('all done');
+    console.log('all done');
+    return;
   }
   const tasks = _.map(_.take(schools, piece), s => {
     console.log('s.school_id =', s.school_id);
