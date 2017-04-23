@@ -189,7 +189,7 @@ const outputSchool = (school, cookie) => {
 const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
 
   let schoolId = school.school_id;
-  if (file.isExisting('dynamic-' + schoolId + '-' + school.full_name)) {
+  if (file.isDynamicExisting(schoolId + '-' + school.full_name)) {
     console.log('skipping, school is existing: ' + schoolId);
     return;
   }

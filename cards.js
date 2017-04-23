@@ -69,7 +69,7 @@ const outputCards = (school, name, employees, children) => {
       "card_list": _.flatten([employeeCards(employees), childrenCards(children)])
   };
 
-  file.write('device_' + school + '_' + name, content);
+  file.writeCard('device_' + school + '_' + name, content);
   console.log('school cards done: ' + school);
 };
 
