@@ -1,7 +1,7 @@
 'use strict';
 
 function gender(gender) {
-  return gender === 0 ? '2' : '1';
+  return gender == 0 ? '2' : '1';
 }
 
 function time(timestamp) {
