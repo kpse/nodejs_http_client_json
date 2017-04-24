@@ -126,7 +126,7 @@ SELECT uid,
        \`image\`,
        \`update_at\`,
        \`publisher_id\`
-  FROM \`location\`.\`news\`
+  FROM \`prod\`.\`news\`
  wHERE \`published\`= 1
    and \`status\`= 1
    and \`school_id\` in (${range})
