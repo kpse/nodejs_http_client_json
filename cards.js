@@ -50,49 +50,43 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
 
 });
 
-function unusedTransform(info) {
-  return {
-    "school_name": "空白卡",
-      "card_list": _.map(info, card => ({
-        "card_no": card[CARD_FIELD],
-        "create_time": "2016-06-12 18:18:18"
-      }))
-  };
-}
+const unusedTransform = info => ({
+  "school_name": "空白卡",
+  "card_list": _.map(info, card => ({
+    "card_no": card[CARD_FIELD],
+    "create_time": "2016-06-12 18:18:18"
+  }))
+})
 
 const outputCards = (school, name, employees, children) => {
 
   console.log('school cards starting: ' + school);
   const content = {
-      "source_school_id": school.toString(),
-      "school_name": name,
-      "card_list": _.flatten([employeeCards(employees), childrenCards(children)])
+    "source_school_id": school.toString(),
+    "school_name": name,
+    "card_list": _.flatten([employeeCards(employees), childrenCards(children)])
   };
 
   file.writeCard('device_' + school + '_' + name, content);
   console.log('school cards done: ' + school);
 };
 
-function employeeCards(employees) {
-  return _.map(employees, e => ({
-    "card_no": e.card,
-    "status": "0",
-    "type": "0",
-    "source_person_id": e.employee_id,
-    "person_name": e.name,
-    "create_time": "2016-06-12 18:18:18"
-  }))
-}
+const employeeCards = employees => _.map(employees, e => ({
+  "card_no": e.card,
+  "status": "0",
+  "type": "0",
+  "source_person_id": e.employee_id,
+  "person_name": e.name,
+  "create_time": "2016-06-12 18:18:18"
+}))
 
-function childrenCards(children) {
-  return _.map(children, c => ({
-      "card_no": c.card,
-      "status": "0",
-      "type": "1",
-      "source_person_id": c.child_id,
-      "person_name": c.name,
-      "source_class_id": c.class_id,
-      "class_name": c.class_name,
-      "create_time": "2016-06-12 18:18:18"
-    }));
-}
+const childrenCards = children => _.map(children, c => ({
+  "card_no": c.card,
+  "status": "0",
+  "type": "1",
+  "source_person_id": c.child_id,
+  "person_name": c.name,
+  "source_class_id": c.class_id,
+  "class_name": c.class_name,
+  "create_time": "2016-06-12 18:18:18"
+}))
