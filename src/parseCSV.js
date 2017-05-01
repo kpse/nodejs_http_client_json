@@ -1,3 +1,5 @@
+'use strict';
+
 const Q = require('q');
 const fs = require('fs');
 const csv = require('csv-parser');
@@ -41,7 +43,7 @@ function accumulateCSV(fileName, fieldName) {
   fs.createReadStream(fileName)
     .pipe(csv())
     .on('data', data => {
-      var existing = dic[data[file]] || [];
+      let existing = dic[data[file]] || [];
       existing.push(data);
       dic[data[file]] = existing;
     }).on('end', () => deferred.resolve(dic));
@@ -50,4 +52,4 @@ function accumulateCSV(fileName, fieldName) {
 
 module.exports = {
   parseCSV, mapCSV, parseCSVWithIndex, accumulateCSV
-}
+};
