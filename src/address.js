@@ -17,9 +17,9 @@ function cityOf(address) {
   if (address === null) {
     return '';
   }
-  let m = address.match(/[^市省县区]+?[省|区]([^市省县区]+?自治州)/);
+  let m = address.match(/[^市省县区]+?[省区]([^市省县区]+?自治州)/);
   if (m === null) {
-    m = address.match(/[^市省县区]+?[省|区]([^市省县区]+?市)/);
+    m = address.match(/[^市省县区]+?[省区]([^市省县区]+?市)/);
   }
   if (m === null) {
     m = address.match(/^([^市省县区]+?市)/);
@@ -31,9 +31,9 @@ function areaOf(address) {
   if (address === null) {
     return '';
   }
-  let m = address.match(/自治州(.+?(县|区|市))/);
+  let m = address.match(/自治州(.+?([县区市]))/);
   if (m === null) {
-    m = address.match(/市(.+?(县|区|市))/);
+    m = address.match(/市(.+?([县区市]))/);
   }
   return (m && m[1]) || '';
 }
