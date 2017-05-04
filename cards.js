@@ -16,13 +16,13 @@ const parseCSV = csv.parseCSV;
 const SCHOOL_FIELD = 'school_id';
 const CARD_FIELD = 'card';
 
-const promiseOfChildrenCard = mapCSV('ref/children_card.' + env + 'csv');
+const promiseOfChildrenCard = mapCSV(`ref/children_card.${env}csv`);
 
-const promiseOfEmployeeCard = mapCSV('ref/employee_card.' + env + 'csv');
+const promiseOfEmployeeCard = mapCSV(`ref/employee_card.${env}csv`);
 
-const promiseOfEmptyCard = mapCSV('ref/empty_card.' + env + 'csv');
+const promiseOfEmptyCard = mapCSV(`ref/empty_card.${env}csv`);
 
-const promiseOfSchool = parseCSV('ref/school_info.' + env + 'csv', SCHOOL_FIELD);
+const promiseOfSchool = parseCSV(`ref/school_info.${env}csv`, SCHOOL_FIELD);
 
 
 Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promiseOfSchool]).then((arr) => {
@@ -46,7 +46,7 @@ Q.all([promiseOfChildrenCard, promiseOfEmployeeCard, promiseOfEmptyCard, promise
 
 
   // file.write('device-空白卡', unusedTransform(unused));
-  console.log('school done: ' + school.school_id);
+  console.log(`school done: ${school.school_id}`);
 
 });
 
@@ -60,15 +60,15 @@ const unusedTransform = info => ({
 
 const outputCards = (school, name, employees, children) => {
 
-  console.log('school cards starting: ' + school);
+  console.log(`school cards starting: ${school}`);
   const content = {
     "source_school_id": school.toString(),
     "school_name": name,
     "card_list": _.flatten([employeeCards(employees), childrenCards(children)])
   };
 
-  file.writeCard('device_' + school + '_' + name, content);
-  console.log('school cards done: ' + school);
+  file.writeCard(`device_${school}_${name}`, content);
+  console.log(`school cards done: ${school}`);
 };
 
 const employeeCards = employees => _.map(employees, e => ({
