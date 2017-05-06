@@ -1,4 +1,5 @@
 'use strict';
+const _ = require('lodash')
 
 function provinceOf(address) {
   if (address === null) {
@@ -11,7 +12,7 @@ function provinceOf(address) {
   if (m === null) {
     m = address.match(/^([^市省县自治特别行政区]+?特别行政区)/);
   }
-  return (m && m[0]) || '';
+  return _.get(m, '[0]','');
 }
 function cityOf(address) {
   if (address === null) {
@@ -24,7 +25,7 @@ function cityOf(address) {
   if (m === null) {
     m = address.match(/^([^市省县区]+?市)/);
   }
-  return (m && m[1]) || '';
+  return _.get(m, '[1]','');
 }
 
 function areaOf(address) {
@@ -35,7 +36,7 @@ function areaOf(address) {
   if (m === null) {
     m = address.match(/市(.+?([县区市]))/);
   }
-  return (m && m[1]) || '';
+  return _.get(m, '[1]','');
 }
 
 module.exports = {
