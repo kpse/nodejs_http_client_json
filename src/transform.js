@@ -52,7 +52,7 @@ function employees(employees) {
     "mobile": e.phone,
     "name": e.name,
     "password": e.password,
-    "birthday": e.birthday + " 00:00:00",
+    "birthday": `${e.birthday} 00:00:00`,
     "sex": display.gender(e.gender), //0-未知，1-男，2-女
     "avatar": e.portrait,
     "source_class_id": e.subordinate

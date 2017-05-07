@@ -11,7 +11,7 @@ const folderCheck = dir => {
 }
 function write(filename, obj) {
   folderCheck('./out/result/dataSync')
-  const file = './out/result/dataSync/' + filename + '.json';
+  const file = `./out/result/dataSync/${filename}.json`;
   jsonfile.writeFile(file, obj, (err) => {
     if (err) console.error('err', err);
   });
@@ -19,7 +19,7 @@ function write(filename, obj) {
 
 function writeCard(filename, obj) {
   folderCheck('./out/result/cardSync')
-  const file = './out/result/cardSync/' + filename + '.json';
+  const file = `./out/result/cardSync/${filename}.json`;
   jsonfile.writeFile(file, obj, (err) => {
     if (err) console.error('err', err);
   });
@@ -27,7 +27,7 @@ function writeCard(filename, obj) {
 
 function dynamicOutput(filename, obj) {
   folderCheck('./out/result/dynamicSync')
-  const file = './out/result/dynamicSync/dynamic-' + filename + '.json';
+  const file = `./out/result/dynamicSync/dynamic-${filename}.json`;
   jsonfile.writeFile(file, obj, function (err) {
     if (err) console.error('err', err);
   });
@@ -43,9 +43,9 @@ const fileCheck = fileName => {
   }
 }
 
-const isExisting = name => fileCheck('./out/result/dataSync/' + name + '.json')
+const isExisting = name => fileCheck(`./out/result/dataSync/${name}.json`)
 
-const isDynamicExisting = name => fileCheck('./out/result/dynamicSync/dynamic-' + name + '.json')
+const isDynamicExisting = name => fileCheck(`./out/result/dynamicSync/dynamic-${name}.json`)
 
 module.exports = {
   write,
