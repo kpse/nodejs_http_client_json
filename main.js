@@ -40,7 +40,7 @@ client.post(constants.loginUrl, args, (data, response) => {
     const filtered = takeTargetSchoolOnly(schools);
     console.log('filtered', filtered);
     iterateSchools(10, filtered, cookies, outputSchool);
-    iterateSchoolsForDynamic(filtered);
+    // iterateSchoolsForDynamic(filtered);
   })
 });
 
@@ -56,41 +56,41 @@ function iterateSchools(piece, schools, cookies, processFn) {
     return processFn(s, cookies);
   });
 
-  Q.allSettled(tasks).then( results => {
+  Q.allSettled(tasks).then(results => {
     const next = _.drop(schools, piece);
     const one = _.first(next) || {};
     console.log('next to ', one.full_name, one.school_id);
     iterateSchools(piece, next, cookies, processFn);
   })
-  .catch(err => console.log('iterate err', err))
-  .done(err => console.log('finished one iteration..'));
+    .catch(err => console.log('iterate err', err))
+    .done(err => console.log('finished one iteration..'));
 }
 
-function iterateSchoolsForDynamic(schools) {
-
-  const promiseOfParentSession = accumulateCSV('ref/p_session.' + env + 'csv', 'school_id');
-
-  const promiseOfEmployeeSession = accumulateCSV('ref/e_session.' + env + 'csv', 'school_id');
-
-  const promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', 'school_id');
-
-  Q.all([promiseOfParentSession, promiseOfEmployeeSession, promiseOfNews]).then( arr => {
-    const parentsDic = arr[0];
-    const employeesDic = arr[1];
-    const allNews = arr[2];
-    // console.log('parentsDic = ' + parentsDic);
-    // console.log('employeesDic = ' + employeesDic);
-    // console.log('allNews = ', allNews);
-
-    _.each(schools, school => {
-      outputHistory(school, employeesDic[school.school_id.toString()] || [],
-        parentsDic[school.school_id.toString()] || [],
-        allNews[school.school_id.toString()] || []);
-    });
-
-  }).catch(err => console.log('school dynamic retrieve err', err));
-
-}
+// function iterateSchoolsForDynamic(schools) {
+//
+//   const promiseOfParentSession = accumulateCSV('ref/p_session.' + env + 'csv', 'school_id');
+//
+//   const promiseOfEmployeeSession = accumulateCSV('ref/e_session.' + env + 'csv', 'school_id');
+//
+//   const promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', 'school_id');
+//
+//   Q.all([promiseOfParentSession, promiseOfEmployeeSession, promiseOfNews]).then( arr => {
+//     const parentsDic = arr[0];
+//     const employeesDic = arr[1];
+//     const allNews = arr[2];
+//     // console.log('parentsDic = ' + parentsDic);
+//     // console.log('employeesDic = ' + employeesDic);
+//     // console.log('allNews = ', allNews);
+//
+//     _.each(schools, school => {
+//       outputHistory(school, employeesDic[school.school_id.toString()] || [],
+//         parentsDic[school.school_id.toString()] || [],
+//         allNews[school.school_id.toString()] || []);
+//     });
+//
+//   }).catch(err => console.log('school dynamic retrieve err', err));
+//
+// }
 
 
 const outputSchool = (school, cookie) => {
@@ -140,8 +140,8 @@ const outputSchool = (school, cookie) => {
   const promiseOfEmployeeClass = accumulateCSV('ref/e_class.' + env + 'csv', 'employee_id');
 
   Q.all([promiseOfEmployees, promiseOfRelationships,
-    promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass, promiseOfEmployeeClass]).then( arr => {
-    const employees = arr[0];
+    promiseOfClasses, promiseOfParentPass, promiseOfEmployeePass, promiseOfEmployeeClass]).then(arr => {
+    const employees = fillDefault(arr[0], defaultEmployee(school));
     const relationships = arr[1];
     const classes = arr[2];
     const pPass = arr[3];
@@ -156,7 +156,7 @@ const outputSchool = (school, cookie) => {
       // console.log(r.parent.phone, pPass[r.parent.phone]);
       const content = pPass[r.parent.phone] || {password: ''};
       r.password = content.password;
-      if(!_.some(allClassIds, i => r.child.class_id === i)) {
+      if (!_.some(allClassIds, i => r.child.class_id === i)) {
         console.log('class is not existing!', r, r.child.class_id, allClassIds);
       }
       return r;
@@ -166,7 +166,7 @@ const outputSchool = (school, cookie) => {
       const guardSubordinate = eClass[e.id] || [{subordinate: ''}];
       // console.log(guard);
       // console.log(guard.subordinate);
-      e.password = guard.login_password || 'No password!';
+      e.password = guard.login_password || '1bbd886460827015e5d605ed44252251';
       e.subordinate = filterNonExistingClass(allClassIds, _.uniq(_.map(guardSubordinate, 'subordinate')), e);
       // console.log('e.subordinate + ', e.id, e.subordinate);
       return e;
@@ -186,30 +186,43 @@ const outputSchool = (school, cookie) => {
   return writeTask.promise;
 };
 
-const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
+// const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
+//
+//   let schoolId = school.school_id;
+//   if (file.isDynamicExisting(schoolId + '-' + school.full_name)) {
+//     console.log('skipping, school is existing: ' + schoolId);
+//     return;
+//   }
+//
+//   console.log('school starting history: ' + schoolId);
+//   const content = {
+//     "school_info": {
+//       "source_id": schoolId.toString(),
+//       "school_name": school.full_name,
+//       "dynamic_list_teacher": [],
+//       "dynamic_list_parent": [],
+//       "notify_list_class": []
+//     }
+//   };
+//
+//   content['school_info']['dynamic_list_teacher'] = transform.mapToTeachers(employeesDic);
+//   content['school_info']['dynamic_list_parent'] = transform.mapToParents(parentsDic);
+//   content['school_info']['notify_list_class'] = transform.mapToNews(newsDic);
+//
+//
+//   file.dynamicOutput(schoolId + '-' + school.full_name, content);
+//   console.log('school dynamic done: ' + schoolId);
+// };
 
-  let schoolId = school.school_id;
-  if (file.isDynamicExisting(schoolId + '-' + school.full_name)) {
-    console.log('skipping, school is existing: ' + schoolId);
-    return;
-  }
+const fillDefault = (list, defaultOne) => list.length > 1 ? list : _.concat(list, [defaultOne]);
 
-  console.log('school starting history: ' + schoolId);
-  const content = {
-    "school_info": {
-      "source_id": schoolId.toString(),
-      "school_name": school.full_name,
-      "dynamic_list_teacher": [],
-      "dynamic_list_parent": [],
-      "notify_list_class": []
-    }
-  };
-
-  content['school_info']['dynamic_list_teacher'] = transform.mapToTeachers(employeesDic);
-  content['school_info']['dynamic_list_parent'] = transform.mapToParents(parentsDic);
-  content['school_info']['notify_list_class'] = transform.mapToNews(newsDic);
-
-
-  file.dynamicOutput(schoolId + '-' + school.full_name, content);
-  console.log('school dynamic done: ' + schoolId);
-};
+const defaultEmployee = school => ({
+  id: `3_${school.school_id}_0002`,
+  phone: `1601111${school.school_id}`,
+  name: '虚拟老师',
+  password: '1bbd886460827015e5d605ed44252251',
+  birthday: '1980-01-01',
+  gender: '0',
+  portrait: '',
+  subordinate: []
+});

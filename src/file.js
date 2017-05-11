@@ -25,13 +25,13 @@ function writeCard(filename, obj) {
   });
 }
 
-function dynamicOutput(filename, obj) {
-  folderCheck('./out/result/dynamicSync')
-  const file = `./out/result/dynamicSync/dynamic-${filename}.json`;
-  jsonfile.writeFile(file, obj, function (err) {
-    if (err) console.error('err', err);
-  });
-}
+// function dynamicOutput(filename, obj) {
+//   folderCheck('./out/result/dynamicSync')
+//   const file = `./out/result/dynamicSync/dynamic-${filename}.json`;
+//   jsonfile.writeFile(file, obj, function (err) {
+//     if (err) console.error('err', err);
+//   });
+// }
 
 const fileCheck = fileName => {
   try {
@@ -52,5 +52,5 @@ module.exports = {
   writeCard,
   isExisting,
   isDynamicExisting,
-  dynamicOutput
+  // dynamicOutput
 };
