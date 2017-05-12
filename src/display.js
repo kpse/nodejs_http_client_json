@@ -1,7 +1,9 @@
 'use strict';
 
+const _ = require('lodash');
+
 function gender(gender) {
-  return gender === '0' ? '2' : '1';
+  return  _.eq(gender, '0') ? '2' : '1';
 }
 
 function time(timestamp) {
