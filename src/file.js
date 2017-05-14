@@ -45,12 +45,12 @@ const fileCheck = fileName => {
 
 const isExisting = name => fileCheck(`./out/result/dataSync/${name}.json`)
 
-const isDynamicExisting = name => fileCheck(`./out/result/dynamicSync/dynamic-${name}.json`)
+// const isDynamicExisting = name => fileCheck(`./out/result/dynamicSync/dynamic-${name}.json`)
 
 module.exports = {
   write,
   writeCard,
   isExisting,
-  isDynamicExisting,
+  // isDynamicExisting,
   // dynamicOutput
 };
