@@ -25,14 +25,6 @@ function writeCard(filename, obj) {
   });
 }
 
-// function dynamicOutput(filename, obj) {
-//   folderCheck('./out/result/dynamicSync')
-//   const file = `./out/result/dynamicSync/dynamic-${filename}.json`;
-//   jsonfile.writeFile(file, obj, function (err) {
-//     if (err) console.error('err', err);
-//   });
-// }
-
 const fileCheck = fileName => {
   try {
     fs.accessSync(fileName, fs.F_OK);
@@ -45,12 +37,8 @@ const fileCheck = fileName => {
 
 const isExisting = name => fileCheck(`./out/result/dataSync/${name}.json`)
 
-// const isDynamicExisting = name => fileCheck(`./out/result/dynamicSync/dynamic-${name}.json`)
-
 module.exports = {
   write,
   writeCard,
-  isExisting,
-  // isDynamicExisting,
-  // dynamicOutput
+  isExisting
 };

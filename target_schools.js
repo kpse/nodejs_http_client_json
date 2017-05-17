@@ -33,7 +33,7 @@ const allIds = [2347, 2348, 2349, 2350, 2351, 2352, 2353, 2354, 2355, 2356, 2357
 
 function filterSchool(schools) {
   return _.filter(schools, school => _.some(allIds, _.curry(_.eq)(school.school_id)));
-};
+}
 
 function filterSchoolId(ids) {
   return _.intersection(ids, _.map(allIds, o => `${o}`));
@@ -49,4 +49,4 @@ module.exports = {
   filterSchool,
   filterSchoolId,
   idRangesInSql
-};
+}

@@ -40,7 +40,6 @@ client.post(constants.loginUrl, args, (data, response) => {
     const filtered = takeTargetSchoolOnly(schools);
     console.log('filtered', filtered);
     iterateSchools(10, filtered, cookies, outputSchool);
-    // iterateSchoolsForDynamic(filtered);
   })
 });
 
@@ -65,33 +64,6 @@ function iterateSchools(piece, schools, cookies, processFn) {
     .catch(err => console.log('iterate err', err))
     .done(err => console.log('finished one iteration..'));
 }
-
-// function iterateSchoolsForDynamic(schools) {
-//
-//   const promiseOfParentSession = accumulateCSV('ref/p_session.' + env + 'csv', 'school_id');
-//
-//   const promiseOfEmployeeSession = accumulateCSV('ref/e_session.' + env + 'csv', 'school_id');
-//
-//   const promiseOfNews = accumulateCSV('ref/news.' + env + 'csv', 'school_id');
-//
-//   Q.all([promiseOfParentSession, promiseOfEmployeeSession, promiseOfNews]).then( arr => {
-//     const parentsDic = arr[0];
-//     const employeesDic = arr[1];
-//     const allNews = arr[2];
-//     // console.log('parentsDic = ' + parentsDic);
-//     // console.log('employeesDic = ' + employeesDic);
-//     // console.log('allNews = ', allNews);
-//
-//     _.each(schools, school => {
-//       outputHistory(school, employeesDic[school.school_id.toString()] || [],
-//         parentsDic[school.school_id.toString()] || [],
-//         allNews[school.school_id.toString()] || []);
-//     });
-//
-//   }).catch(err => console.log('school dynamic retrieve err', err));
-//
-// }
-
 
 const outputSchool = (school, cookie) => {
   const writeTask = Q.defer();
@@ -185,34 +157,6 @@ const outputSchool = (school, cookie) => {
   }).catch(err => console.log(`school ${school.school_id} retrieve err`, err));
   return writeTask.promise;
 };
-
-// const outputHistory = (school, employeesDic, parentsDic, newsDic) => {
-//
-//   let schoolId = school.school_id;
-//   if (file.isDynamicExisting(schoolId + '-' + school.full_name)) {
-//     console.log('skipping, school is existing: ' + schoolId);
-//     return;
-//   }
-//
-//   console.log('school starting history: ' + schoolId);
-//   const content = {
-//     "school_info": {
-//       "source_id": schoolId.toString(),
-//       "school_name": school.full_name,
-//       "dynamic_list_teacher": [],
-//       "dynamic_list_parent": [],
-//       "notify_list_class": []
-//     }
-//   };
-//
-//   content['school_info']['dynamic_list_teacher'] = transform.mapToTeachers(employeesDic);
-//   content['school_info']['dynamic_list_parent'] = transform.mapToParents(parentsDic);
-//   content['school_info']['notify_list_class'] = transform.mapToNews(newsDic);
-//
-//
-//   file.dynamicOutput(schoolId + '-' + school.full_name, content);
-//   console.log('school dynamic done: ' + schoolId);
-// };
 
 const fillDefault = (list, defaultOne) => list.length > 1 ? list : _.concat(list, [defaultOne]);
 
