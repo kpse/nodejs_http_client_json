@@ -12,6 +12,10 @@
 
 - extract all cards information
 
+### newExport.js
+
+- extract schools infornamtion in new format to new recipients
+
 ## test
 
 - npm test
