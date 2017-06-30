@@ -3,9 +3,7 @@
 const _ = require('lodash');
 const Q = require('q');
 const accumulateCSV = require('./src/parseCSV').accumulateCSV;
-var shell = require('shelljs');
-const fs = require('fs');
-const iconv = require('iconv-lite');
+const file = require('./src/file');
 
 const allFamiliesReading = accumulateCSV('ref/new_export_data.csv', 'school_id');
 const allSchoolsReading = accumulateCSV('ref/school_class.csv', 'school_id');
@@ -31,8 +29,12 @@ function fillIn(families) {
     return {
       id: schoolId,
       name: school[0].full_name,
-      classes: _(school).map(clz => _.assign({}, mapClass(clz), {children: _.map(byClass[clz.class_id], mapChild)}, {parents: _.map(byClass[clz.class_id], mapParent)}))
-        .reject(clz => _.isEmpty(clz.children)).value()
+      classes: _(school).map(clz =>
+        _.assign({},
+          mapClass(clz),
+          {children: _.map(byClass[clz.class_id], mapChild)},
+          {parents: _.map(byClass[clz.class_id], mapParent)})
+      ).reject(clz => _.isEmpty(clz.children)).value()
     }
   }
 }
@@ -40,19 +42,12 @@ function fillIn(families) {
 function exportSchool(school) {
   _.each(school.classes, clz => {
     const classFolder = `./out/result/${school.name}/${clz.name}/`;
-    shell.mkdir('-p', classFolder);
-
-    fs.writeFile(`${classFolder}/book1.csv`, iconv.encode(toChilrenCSV(clz.children), 'gbk'), err => {
-      if(err) throw err
-    });
-
-    fs.writeFile(`${classFolder}/book2.csv`, iconv.encode(toParentCSV(clz.parents), 'gbk'), err => {
-      if(err) throw err
-    });
+    file.writeGbk(classFolder, 'book1.csv', toChildrenCSV(clz.children))
+    file.writeGbk(classFolder, 'book2.csv', toParentCSV(clz.parents))
   })
 }
 
-function toChilrenCSV(children) {
+function toChildrenCSV(children) {
   const title = '学生姓名,学号,联系电话,职务,性别,考勤卡号'
   const content = _.join(_.map(children, child => `${child.name},${child.phone},${child.phone},1,1,`), '\n');
   return _.join([title, content], '\n')

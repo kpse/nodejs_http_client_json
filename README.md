@@ -4,7 +4,7 @@
 
 - retrieve information from stage/prod
 
-### address_translate.js
+### addressTranslation.js
 
 - transform csv information
 

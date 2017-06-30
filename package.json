@@ -6,6 +6,7 @@
   "dependencies": {
     "csv-parser": "^1.9.3",
     "fs": "0.0.2",
+    "iconv-lite": "^0.4.18",
     "jsonfile": "^2.3.1",
     "line-by-line": "^0.1.5",
     "lodash": "^4.13.1",

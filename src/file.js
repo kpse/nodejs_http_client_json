@@ -2,11 +2,13 @@
 
 const jsonfile = require('jsonfile');
 const fs = require('fs');
+const iconv = require('iconv-lite');
+const shell = require('shelljs');
 
 
 const folderCheck = dir => {
   if (!fs.existsSync(dir)){
-    fs.mkdirSync(dir);
+    shell.mkdir('-p', dir);
   }
 }
 function write(filename, obj) {
@@ -35,10 +37,18 @@ const fileCheck = fileName => {
   }
 }
 
+function writeGbk(folder, fileName, content) {
+  folderCheck(folder)
+  fs.writeFile(`${folder}/${fileName}`, iconv.encode(content, 'gbk'), err => {
+    if (err) console.error(err)
+  });
+}
+
 const isExisting = name => fileCheck(`./out/result/dataSync/${name}.json`)
 
 module.exports = {
   write,
   writeCard,
-  isExisting
+  isExisting,
+  writeGbk
 };
