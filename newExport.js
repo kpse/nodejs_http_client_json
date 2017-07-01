@@ -58,3 +58,5 @@ function toParentCSV(parents) {
   const content = _.join(_.map(parents, p => `${p.phone},${p.phone},${p.name},${p.relationship},1,1,1`), '\n');
   return _.join([title, content], '\n')
 }
+
+module.exports = {fillIn}
