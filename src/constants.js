@@ -1,7 +1,6 @@
 'use strict';
 
 const env = '';
-// const env = 'stage2.';
 
 const host = `https://${env}cocobabys.com`;
 const loginUrl = `${host}/employee_login.do`;

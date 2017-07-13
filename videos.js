@@ -6,7 +6,6 @@ const csv = require('./src/parseCSV');
 const fs = require('fs');
 
 const env = '';
-// const env = 'stage2.';
 
 const mapCSV = csv.mapCSV;
 

@@ -4,6 +4,8 @@
 
 - retrieve information from stage/prod
 
+- no stage any more
+
 ### addressTranslation.js
 
 - transform csv information
